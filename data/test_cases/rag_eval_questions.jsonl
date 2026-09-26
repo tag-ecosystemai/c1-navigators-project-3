@@ -1,0 +1,18 @@
+{"question": "What is the minimum age to apply for a loan?", "expected_section": "POL-ELG-001"}
+{"question": "What is the minimum monthly net income required?", "expected_section": "POL-ELG-002"}
+{"question": "How long must a self-employed applicant have been trading?", "expected_section": "POL-ELG-003"}
+{"question": "What credit score puts an applicant in Tier 1 prime?", "expected_section": "POL-SCR-001"}
+{"question": "Does an active tax lien automatically decline an application?", "expected_section": "POL-SCR-002"}
+{"question": "What is the maximum loan amount and term allowed?", "expected_section": "POL-PRD-001"}
+{"question": "What debt-to-income ratio requires mandatory referral to a senior underwriter?", "expected_section": "POL-DTI-001"}
+{"question": "What is the maximum loan-to-income multiplier for a near-prime applicant?", "expected_section": "POL-LTI-001"}
+{"question": "How much disposable income must an applicant with dependents retain?", "expected_section": "POL-NDI-001"}
+{"question": "What happens if declared income differs from verified bank deposits by 30%?", "expected_section": "POL-INC-001"}
+{"question": "How much gambling spend counts as a policy violation?", "expected_section": "POL-TXN-001"}
+{"question": "How many NSF or returned payment events trigger a knockout?", "expected_section": "POL-TXN-002"}
+{"question": "What counts as undisclosed debt from BNPL providers like Klarna?", "expected_section": "POL-TXN-003"}
+{"question": "Is a large cash deposit right before applying a red flag?", "expected_section": "POL-TXN-004"}
+{"question": "What does a healthy account balance burn rate look like?", "expected_section": "POL-TXN-005"}
+{"question": "What are the criteria for standard approval?", "expected_section": "POL-DEC-001"}
+{"question": "What makes a case require further review?", "expected_section": "POL-DEC-002"}
+{"question": "What are the knockout criteria for a decline recommendation?", "expected_section": "POL-DEC-003"}

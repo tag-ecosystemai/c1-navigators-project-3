@@ -42,3 +42,4 @@ wheels/
 # Environment Variables
 .env
 .env.local
+data/processed/policy_index/
