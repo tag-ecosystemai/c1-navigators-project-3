@@ -1,0 +1,14 @@
+# Policy RAG (ai_engineering/rag)
+numpy>=1.24
+scikit-learn>=1.3       # offline hashing embedder for dev/tests
+pydantic>=2.5
+python-dotenv>=1.0
+openai>=1.40            # Azure OpenAI embeddings + chat
+pypdf>=4.0              # PDF policy documents
+python-docx>=1.1        # Word policy documents
+
+# Only needed when RAG_STORE=azure_search
+azure-search-documents>=11.5
+
+# Tests
+pytest>=8.0
