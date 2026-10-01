@@ -228,7 +228,7 @@ def generate_applicant_pool(total_count=50):
     """Generates the full list of applicants including golden personas and realistic synthetic records."""
     applicants = []
     
-    # 1. Add Golden Personas
+        # 1. Add Golden Personas
     for p in GOLDEN_PERSONAS:
         app = p.copy()
         pmt = calculate_monthly_payment(app["requested_loan_amount"], app["interest_rate_pct"], app["loan_term_months"])
@@ -237,9 +237,24 @@ def generate_applicant_pool(total_count=50):
         app["calculated_dti_pct"] = round((total_debt_service / app["declared_monthly_net_income"]) * 100, 2)
         app["calculated_lti_ratio"] = round(app["requested_loan_amount"] / app["declared_annual_income"], 2)
         app["application_date"] = "2026-03-01"
+
+        # Ensure golden personas have all boosted-risk fields
+        app.setdefault("income_instability_flag", False)
+        app.setdefault("gambling_ratio", 0.0)
+        app.setdefault("nsf_count", 0)
+        app.setdefault("window_dressing_amount", 0.0)
+        app.setdefault("undisclosed_debt_total", 0.0)
+        app.setdefault("shadow_dti_flag", False)
+        app.setdefault("anomaly_score", 0)
+
         applicants.append(app)
+
         
+
     # 2. Add remaining realistic synthetic applicants
+    risky_target = 15  # we want ~15 risky applicants
+    risky_count = 0
+
     for i in range(len(GOLDEN_PERSONAS) + 1, total_count + 1):
         cust_id = f"CUST-{1000 + i}"
         app_id = f"APP-2026-{i:03d}"
@@ -250,53 +265,65 @@ def generate_applicant_pool(total_count=50):
         email = f"{first_name.lower()}.{last_name.lower()}{random.randint(10, 99)}@example.com"
         phone = f"+1-555-0{random.randint(100, 999)}"
         address = f"{random.randint(100, 999)} {random.choice(['Maple', 'Oak', 'Washington', 'Highland', 'Sunset'])} {random.choice(['St', 'Ave', 'Blvd', 'Rd'])}, Chicago, IL"
+
+        # Decide if this applicant should be risky
+        force_risky = risky_count < risky_target and random.random() < 0.35
+
+        # Housing
         housing = random.choices(["RENT", "MORTGAGE", "OWN"], weights=[0.45, 0.45, 0.10])[0]
         housing_cost = random.randint(900, 2400) if housing != "OWN" else random.randint(200, 450)
-        
+
+        # Employment
         emp_company, emp_role, min_sal, max_sal = random.choice(EMPLOYERS)
         annual_income = round(random.uniform(min_sal, max_sal), -2)
         monthly_net = round((annual_income * 0.72) / 12.0, 2)
-        
-        # Credit Score distribution: realistic mix
-        score_choice = random.choices(
-            ["PRIME", "NEAR_PRIME", "SUBPRIME", "HIGH_RISK"],
-            weights=[0.45, 0.35, 0.15, 0.05]
-        )[0]
-        
-        if score_choice == "PRIME":
-            score = random.randint(720, 810)
-            tier = "TIER_1_PRIME"
-            rate = round(random.uniform(6.5, 8.5), 2)
-            loan_amt = round(random.uniform(10000, 35000), -2)
-        elif score_choice == "NEAR_PRIME":
-            score = random.randint(660, 719)
-            tier = "TIER_2_NEAR_PRIME"
-            rate = round(random.uniform(8.9, 12.5), 2)
-            loan_amt = round(random.uniform(8000, 25000), -2)
-        elif score_choice == "SUBPRIME":
-            score = random.randint(600, 659)
-            tier = "TIER_3_SUBPRIME"
-            rate = round(random.uniform(13.0, 17.5), 2)
-            loan_amt = round(random.uniform(4000, 15000), -2)
-        else:
-            score = random.randint(520, 595)
+
+        # Credit score logic
+        if force_risky:
+            score = random.randint(520, 600)
             tier = "TIER_4_HIGH_RISK"
             rate = round(random.uniform(18.0, 24.0), 2)
-            loan_amt = round(random.uniform(3000, 10000), -2)
-            
+            loan_amt = round(random.uniform(3000, 12000), -2)
+        else:
+            score_choice = random.choices(
+                ["PRIME", "NEAR_PRIME", "SUBPRIME"],
+                weights=[0.45, 0.35, 0.20]
+            )[0]
+
+            if score_choice == "PRIME":
+                score = random.randint(720, 810)
+                tier = "TIER_1_PRIME"
+                rate = round(random.uniform(6.5, 8.5), 2)
+                loan_amt = round(random.uniform(10000, 35000), -2)
+            elif score_choice == "NEAR_PRIME":
+                score = random.randint(660, 719)
+                tier = "TIER_2_NEAR_PRIME"
+                rate = round(random.uniform(8.9, 12.5), 2)
+                loan_amt = round(random.uniform(8000, 25000), -2)
+            else:
+                score = random.randint(600, 659)
+                tier = "TIER_3_SUBPRIME"
+                rate = round(random.uniform(13.0, 17.5), 2)
+                loan_amt = round(random.uniform(4000, 15000), -2)
+
         term = random.choice([24, 36, 48, 60])
-        purpose = random.choice(["DEBT_CONSOLIDATION", "HOME_IMPROVEMENT", "MAJOR_PURCHASE", "MEDICAL_EXPENSES", "AUTO_REPAIR"])
         existing_debt = round(random.uniform(200, 800), 2)
-        
+
+        # Payment calculations
         pmt = calculate_monthly_payment(loan_amt, rate, term)
         total_debt_service = existing_debt + pmt
         dti = round((total_debt_service / monthly_net) * 100, 2)
         lti = round(loan_amt / annual_income, 2)
-        
-        expected_verdict = "ELIGIBLE_FOR_APPROVAL" if (score >= 660 and dti <= 35.0) else (
-            "FURTHER_REVIEW_REQUIRED" if (score >= 600 and dti <= 43.0) else "DECLINE_RECOMMENDED"
-        )
-        
+
+        # Risk logic
+        if force_risky or dti > 45 or score < 600:
+            expected_verdict = "DECLINE_RECOMMENDED"
+            risky_count += 1
+        elif score >= 660 and dti <= 35:
+            expected_verdict = "ELIGIBLE_FOR_APPROVAL"
+        else:
+            expected_verdict = "FURTHER_REVIEW_REQUIRED"
+
         app = {
             "applicant_id": cust_id,
             "application_id": app_id,
@@ -316,24 +343,77 @@ def generate_applicant_pool(total_count=50):
             "credit_score": score,
             "credit_score_tier": tier,
             "requested_loan_amount": loan_amt,
-            "loan_purpose": purpose,
+            "loan_purpose": random.choice(["DEBT_CONSOLIDATION", "HOME_IMPROVEMENT", "MAJOR_PURCHASE", "MEDICAL_EXPENSES", "AUTO_REPAIR"]),
             "loan_term_months": term,
             "interest_rate_pct": rate,
             "estimated_monthly_payment": pmt,
             "declared_existing_monthly_debt": existing_debt,
             "declared_monthly_housing_expense": housing_cost,
             "dependents_count": random.choice([0, 1, 2]),
-            "bankruptcies_count": 0,
+            "bankruptcies_count": 1 if force_risky and random.random() < 0.4 else 0,
             "tax_liens_count": 0,
             "calculated_dti_pct": dti,
             "calculated_lti_ratio": lti,
             "application_date": "2026-03-01",
             "persona_type": "STANDARD_SYNTHETIC",
             "expected_verdict": expected_verdict,
-            "notes": "Standard generated applicant profile."
+            "notes": "Synthetic applicant profile with realistic risk distribution."
         }
+
+            # --- BOOSTED RISK FEATURES (PRD-Aligned) ---
+
+        # 1. Income Instability (POL-INC-001)
+        if force_risky and random.random() < 0.45:
+            declared_multiplier = random.uniform(1.2, 1.6)
+            app["declared_annual_income"] = round(annual_income * declared_multiplier, 2)
+            app["declared_monthly_net_income"] = round((app["declared_annual_income"] * 0.72) / 12.0, 2)
+            app["income_instability_flag"] = True
+        else:
+            app["income_instability_flag"] = False
+
+        # 2. Gambling Behavior (POL-TXN-001)
+        if force_risky and random.random() < 0.50:
+            app["gambling_ratio"] = round(random.uniform(0.20, 0.45), 2)
+            app["persona_type"] = "RISK_GAMBLING_BEHAVIOR"
+        else:
+            app["gambling_ratio"] = 0.0
+
+        # 3. NSF Overdraft Fees (POL-TXN-002)
+        if force_risky and random.random() < 0.40:
+            app["nsf_count"] = random.randint(2, 6)
+        else:
+            app["nsf_count"] = 0
+
+        # 4. Window Dressing Deposits (POL-TXN-004)
+        if force_risky and random.random() < 0.35:
+            app["window_dressing_amount"] = round(random.uniform(8000, 20000), 2)
+        else:
+            app["window_dressing_amount"] = 0.0
+
+        # 5. Undisclosed Debts (POL-TXN-003)
+        if force_risky and random.random() < 0.50:
+            app["undisclosed_debt_total"] = round(random.uniform(300, 1200), 2)
+        else:
+            app["undisclosed_debt_total"] = 0.0
+
+        # 6. Shadow DTI (Actual DTI > 45%)
+        if force_risky and random.random() < 0.50:
+            hidden_debt = round(random.uniform(150, 600), 2)
+            total_debt_service = existing_debt + pmt + hidden_debt
+            app["calculated_dti_pct"] = round((total_debt_service / monthly_net) * 100, 2)
+            app["shadow_dti_flag"] = True
+        else:
+            app["shadow_dti_flag"] = False
+
+        # 7. Anomaly Score Variation
+        if force_risky:
+            app["anomaly_score"] = random.randint(1, 5)
+        else:
+            app["anomaly_score"] = 0
+
         applicants.append(app)
-        
+
+
     return applicants
 
 
