@@ -54,21 +54,73 @@ class AzureOpenAIEmbedder:
         return _normalise(np.array(vectors, dtype=np.float32))
 
 
+# class HashingEmbedder:
+#     """Bag of words and word pairs hashed into a fixed-size vector (scikit-learn)."""
+
+#     def __init__(self, n_features: int = 2048):
+#         from sklearn.feature_extraction.text import HashingVectorizer
+
+#         self.vectorizer = HashingVectorizer(
+#             n_features=n_features, ngram_range=(1, 2), alternate_sign=False, norm=None, stop_words="english"
+#         )
+#         self.name = f"local-hashing:{n_features}"
+
+#     def embed(self, texts: list[str]) -> np.ndarray:
+#         m = self.vectorizer.transform(texts).toarray().astype(np.float32)
+#         m = np.log1p(m)  # damp repeated words
+#         return _normalise(m)
+
+# Modified HashingEmbedder class
 class HashingEmbedder:
-    """Bag of words and word pairs hashed into a fixed-size vector (scikit-learn)."""
+    """Lightweight bag-of-words and word-pair hashing embedder using only Python."""
 
     def __init__(self, n_features: int = 2048):
-        from sklearn.feature_extraction.text import HashingVectorizer
-
-        self.vectorizer = HashingVectorizer(
-            n_features=n_features, ngram_range=(1, 2), alternate_sign=False, norm=None, stop_words="english"
-        )
+        self.n_features = n_features
         self.name = f"local-hashing:{n_features}"
 
+    def _tokens(self, text: str) -> list[str]:
+        import re
+
+        words = re.findall(r"[a-zA-Z0-9]+", text.lower())
+
+        # Remove common English stop words.
+        stop_words = {
+            "a", "an", "and", "are", "as", "at", "be", "by", "for",
+            "from", "in", "is", "it", "of", "on", "or", "that", "the",
+            "this", "to", "was", "were", "with",
+        }
+
+        words = [word for word in words if word not in stop_words]
+
+        # Include both individual words and adjacent word pairs.
+        return words + [
+            f"{words[i]} {words[i + 1]}"
+            for i in range(len(words) - 1)
+        ]
+
     def embed(self, texts: list[str]) -> np.ndarray:
-        m = self.vectorizer.transform(texts).toarray().astype(np.float32)
-        m = np.log1p(m)  # damp repeated words
-        return _normalise(m)
+        import hashlib
+
+        matrix = np.zeros(
+            (len(texts), self.n_features),
+            dtype=np.float32,
+        )
+
+        for row, text in enumerate(texts):
+            for token in self._tokens(text):
+                digest = hashlib.md5(
+                    token.encode("utf-8")
+                ).digest()
+
+                index = int.from_bytes(
+                    digest[:4],
+                    byteorder="little",
+                ) % self.n_features
+
+                matrix[row, index] += 1.0
+
+        matrix = np.log1p(matrix)  # damp repeated words
+        return _normalise(matrix)
 
 
 def get_embedder(settings: RAGSettings) -> Embedder:
