@@ -16,6 +16,8 @@ __pycache__/
 env/
 venv/
 .venv/
+myenv/
+.pytest_cache/
 ENV/
 build/
 develop-eggs/
