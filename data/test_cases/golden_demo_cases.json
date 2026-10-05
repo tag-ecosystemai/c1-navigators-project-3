@@ -32,7 +32,14 @@
     "estimated_monthly_payment": 466.59,
     "calculated_dti_pct": 18.33,
     "calculated_lti_ratio": 0.19,
-    "application_date": "2026-03-01"
+    "application_date": "2026-03-01",
+    "income_instability_flag": false,
+    "gambling_ratio": 0.0,
+    "nsf_count": 0,
+    "window_dressing_amount": 0.0,
+    "undisclosed_debt_total": 0.0,
+    "shadow_dti_flag": false,
+    "anomaly_score": 0
   },
   {
     "applicant_id": "CUST-GOLD-002",
@@ -67,7 +74,14 @@
     "estimated_monthly_payment": 628.08,
     "calculated_dti_pct": 16.37,
     "calculated_lti_ratio": 0.28,
-    "application_date": "2026-03-01"
+    "application_date": "2026-03-01",
+    "income_instability_flag": false,
+    "gambling_ratio": 0.0,
+    "nsf_count": 0,
+    "window_dressing_amount": 0.0,
+    "undisclosed_debt_total": 0.0,
+    "shadow_dti_flag": false,
+    "anomaly_score": 0
   },
   {
     "applicant_id": "CUST-GOLD-003",
@@ -102,7 +116,14 @@
     "estimated_monthly_payment": 332.14,
     "calculated_dti_pct": 19.49,
     "calculated_lti_ratio": 0.2,
-    "application_date": "2026-03-01"
+    "application_date": "2026-03-01",
+    "income_instability_flag": false,
+    "gambling_ratio": 0.0,
+    "nsf_count": 0,
+    "window_dressing_amount": 0.0,
+    "undisclosed_debt_total": 0.0,
+    "shadow_dti_flag": false,
+    "anomaly_score": 0
   },
   {
     "applicant_id": "CUST-GOLD-004",
@@ -137,7 +158,14 @@
     "estimated_monthly_payment": 458.26,
     "calculated_dti_pct": 19.24,
     "calculated_lti_ratio": 0.29,
-    "application_date": "2026-03-01"
+    "application_date": "2026-03-01",
+    "income_instability_flag": false,
+    "gambling_ratio": 0.0,
+    "nsf_count": 0,
+    "window_dressing_amount": 0.0,
+    "undisclosed_debt_total": 0.0,
+    "shadow_dti_flag": false,
+    "anomaly_score": 0
   },
   {
     "applicant_id": "CUST-GOLD-005",
@@ -172,6 +200,13 @@
     "estimated_monthly_payment": 401.33,
     "calculated_dti_pct": 53.42,
     "calculated_lti_ratio": 0.39,
-    "application_date": "2026-03-01"
+    "application_date": "2026-03-01",
+    "income_instability_flag": false,
+    "gambling_ratio": 0.0,
+    "nsf_count": 0,
+    "window_dressing_amount": 0.0,
+    "undisclosed_debt_total": 0.0,
+    "shadow_dti_flag": false,
+    "anomaly_score": 0
   }
 ]
