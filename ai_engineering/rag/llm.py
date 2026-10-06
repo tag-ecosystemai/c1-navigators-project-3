@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Protocol
 
 from .config import RAGSettings
@@ -36,3 +37,57 @@ class AzureChatLLM:
             messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
         )
         return json.loads(resp.choices[0].message.content or "{}")
+
+# Added a local_llm to be able to do local testing
+class LocalTestLLM:
+    """Deterministic local LLM replacement used for RAG integration testing."""
+
+    def __init__(self):
+        self.name = "local-test"
+
+    def complete_json(self, system: str, user: str) -> dict:
+        # Find the first retrieved policy chunk.
+        chunk_match = re.search(
+            r"=== EXCERPT chunk_id:\s*(\S+)",
+            user
+        )
+
+        chunk_id = chunk_match.group(1) if chunk_match else "local-test-chunk"
+
+        # For our first integration test, use credit_score
+        # if it exists in the application fields.
+        if "credit_score" in user:
+            return {
+                "rules": [
+                    {
+                        "rule_id": "local_credit_score_rule",
+                        "requirement": "Credit score must be at least 720.",
+                        "chunk_id": chunk_id,
+                        "clause": None,
+                        "quote": "",
+                        "field": "credit_score",
+                        "operator": ">=",
+                        "threshold": 720,
+                        "unit": "score",
+                        "severity": "requirement",
+                    }
+                ]
+            }
+
+        # Fallback rule if credit_score is not present.
+        return {
+            "rules": [
+                {
+                    "rule_id": "local_test_rule",
+                    "requirement": "Local test policy rule.",
+                    "chunk_id": chunk_id,
+                    "clause": None,
+                    "quote": "",
+                    "field": None,
+                    "operator": "qualitative",
+                    "threshold": None,
+                    "unit": None,
+                    "severity": "requirement",
+                }
+            ]
+        }

@@ -14,7 +14,7 @@ from __future__ import annotations
 from functools import lru_cache
 
 from .config import get_settings
-from .llm import AzureChatLLM
+from .llm import AzureChatLLM, LocalTestLLM
 from .policy_checker import PolicyChecker
 from .retriever import PolicyRetriever
 
@@ -24,10 +24,21 @@ def get_retriever() -> PolicyRetriever:
     return PolicyRetriever(get_settings())
 
 
+# @lru_cache(maxsize=1)
+# def get_checker() -> PolicyChecker:
+#     retriever = get_retriever()
+#     return PolicyChecker(retriever, AzureChatLLM(retriever.settings))
 @lru_cache(maxsize=1)
 def get_checker() -> PolicyChecker:
+
     retriever = get_retriever()
-    return PolicyChecker(retriever, AzureChatLLM(retriever.settings))
+
+    if retriever.settings.rag_llm == "local":
+        llm = LocalTestLLM()
+    else:
+        llm = AzureChatLLM(retriever.settings)
+
+    return PolicyChecker(retriever, llm)
 
 
 def search_policies(query: str, k: int = 5, category: str | None = None) -> dict:

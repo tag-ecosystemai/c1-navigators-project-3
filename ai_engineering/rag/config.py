@@ -32,6 +32,8 @@ class RAGSettings:
     embeddings_backend: str = field(default_factory=lambda: os.getenv("RAG_EMBEDDINGS", "azure"))
     # "local" (numpy + BM25 on disk) or "azure_search" (Azure AI Search)
     store_backend: str = field(default_factory=lambda: os.getenv("RAG_STORE", "local"))
+    # "azure" (Azure OpenAI chat) or "local" (deterministic test LLM)
+    rag_llm: str = field(default_factory=lambda: os.getenv("RAG_LLM", "azure"))
 
     # Chunking
     chunk_max_chars: int = field(default_factory=lambda: int(os.getenv("RAG_CHUNK_MAX_CHARS", "1200")))
