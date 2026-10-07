@@ -11,6 +11,7 @@ Usage in the agent:
 
 from __future__ import annotations
 
+import logging
 from functools import lru_cache
 
 from .config import get_settings
@@ -18,10 +19,19 @@ from .llm import AzureChatLLM, LocalTestLLM
 from .policy_checker import PolicyChecker
 from .retriever import PolicyRetriever
 
+log = logging.getLogger(__name__)
+
 
 @lru_cache(maxsize=1)
 def get_retriever() -> PolicyRetriever:
-    return PolicyRetriever(get_settings())
+    retriever = PolicyRetriever(get_settings())
+    if not retriever.index_exists():
+        # The index is gitignored, so a fresh clone has none: build it on first use.
+        log.warning("No policy index at %s; building it now from %s", retriever.settings.index_dir,
+                    retriever.settings.policy_dir)
+        chunks = retriever.ingest()
+        log.warning("Policy index built automatically: %d chunks with %s", len(chunks), retriever.embedder.name)
+    return retriever
 
 
 # @lru_cache(maxsize=1)

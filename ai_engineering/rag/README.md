@@ -40,6 +40,49 @@ python -m ai_engineering.rag.cli check data/test_cases/sample_application.json  
 python -m pytest ai_engineering/tests -q                             # offline tests, no keys needed
 ```
 
+```bash
+python -m ai_engineering.rag.cli doctor                              # check Azure setup, one tiny call each
+python scripts/run_golden_rag.py [--verbose]                         # golden cases: engine verdict vs RAG cross-check
+```
+
+### Auto-ingest
+
+`data/processed/policy_index/` is gitignored, so a fresh clone has no index. `tools.get_retriever()`
+builds it from `data/policies` the first time it is needed (and logs
+`Policy index built automatically: N chunks with <embedder>`), so `check_policy_compliance` works
+without running `ingest` first. The build needs the configured embedder, so with
+`RAG_EMBEDDINGS=azure` it needs working Azure credentials; run `ingest` yourself after editing the
+policies, since an existing index is never rebuilt automatically.
+
+### Doctor
+
+`doctor` prints one PASS / FAIL / SKIP line per check, with the likely fix on failures, and exits 1
+if any check failed: required env vars (set/unset only, values are never printed), one embeddings
+call, one chat call, and whether the policy index exists. Run it first when something is wrong.
+
+Azure calls use a request timeout (`RAG_AZURE_TIMEOUT`, default 30 s) and `max_retries=2`. A missing
+deployment, a rejected key (401), a rate limit (429) or a timeout is reported in plain English
+(`azure_errors.py`) instead of as a raw SDK traceback.
+
+### Cross-check against the rule evaluator
+
+`cross_check.py` compares the deterministic evaluator (`policy_engine/policy_evaluator.py`,
+`{"POL-DTI-001": "FLAG_FOR_REVIEW", ...}`) with the RAG checker, rule by rule, and attaches the
+policy citation and quote to each. It never changes the evaluator's verdict: a disagreement
+(`soft_conflict`, `hard_conflict`) is listed in `conflicts` and sets `needs_review`, for the analyst
+to resolve. `orchestrator.investigate()` runs it and returns it as `report["policy_cross_check"]`.
+If the RAG side is unavailable (no key, network error) it returns `available: false` with the
+error, and the investigation is not failed or marked degraded. Note that this means every
+`investigate()` call goes through the RAG checker (extracted rules are cached on disk, see below).
+
+### Golden-case runner
+
+`scripts/run_golden_rag.py` runs each case in `data/test_cases/golden_demo_cases.json` (with its
+transactions from `data/processed/transactions.json`) through `investigate()` and prints persona,
+expected verdict, the engine's verdict, RAG outcome counts and conflicting rule codes. The answer-key
+fields (`expected_verdict`, `persona_type`, `notes`) are removed before the application is analysed,
+so they never reach the RAG prompt. Without Azure credentials the RAG columns show `unavailable`.
+
 No Azure keys yet? Set `RAG_EMBEDDINGS=local` in `.env` to use `ingest`, `search` and `eval`
 offline. After you switch embedders, run `ingest` again; the retriever refuses to search an
 index built with a different embedder.

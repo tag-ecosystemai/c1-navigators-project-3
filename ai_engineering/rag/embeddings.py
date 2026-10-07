@@ -12,6 +12,7 @@ from typing import Protocol
 
 import numpy as np
 
+from .azure_errors import call_azure
 from .config import RAGSettings
 
 
@@ -40,6 +41,8 @@ class AzureOpenAIEmbedder:
             azure_endpoint=settings.azure_openai_endpoint,
             api_key=settings.azure_openai_api_key,
             api_version=settings.azure_openai_api_version,
+            timeout=settings.azure_timeout,
+            max_retries=2,
         )
         self.deployment = settings.embedding_deployment
         self.batch_size = batch_size
@@ -49,7 +52,11 @@ class AzureOpenAIEmbedder:
         vectors: list[list[float]] = []
         for i in range(0, len(texts), self.batch_size):
             batch = [t.replace("\n", " ") for t in texts[i : i + self.batch_size]]
-            resp = self.client.embeddings.create(model=self.deployment, input=batch)
+            resp = call_azure(
+                lambda b=batch: self.client.embeddings.create(model=self.deployment, input=b),
+                self.deployment,
+                "embedding",
+            )
             vectors.extend(d.embedding for d in sorted(resp.data, key=lambda d: d.index))
         return _normalise(np.array(vectors, dtype=np.float32))
 

@@ -38,6 +38,13 @@ class PolicyRetriever:
         self._checked = True
         return chunks
 
+    def index_exists(self) -> bool:
+        """True if there is something to search. Only the local store can be checked cheaply;
+        the Azure AI Search index is assumed to exist."""
+        if isinstance(self.store, LocalVectorStore):
+            return (self.store.index_dir / "manifest.json").exists()
+        return True
+
     # ------------------------------------------------------------------ search
     def _check_compatible(self) -> None:
         if self._checked:

@@ -6,6 +6,7 @@ import json
 import re
 from typing import Protocol
 
+from .azure_errors import call_azure
 from .config import RAGSettings
 
 
@@ -25,16 +26,22 @@ class AzureChatLLM:
             azure_endpoint=settings.azure_openai_endpoint,
             api_key=settings.azure_openai_api_key,
             api_version=settings.azure_openai_api_version,
+            timeout=settings.azure_timeout,
+            max_retries=2,
         )
         self.deployment = settings.chat_deployment
         self.name = f"azure:{self.deployment}"
 
     def complete_json(self, system: str, user: str) -> dict:
-        resp = self.client.chat.completions.create(
-            model=self.deployment,
-            temperature=0,
-            response_format={"type": "json_object"},
-            messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
+        resp = call_azure(
+            lambda: self.client.chat.completions.create(
+                model=self.deployment,
+                temperature=0,
+                response_format={"type": "json_object"},
+                messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
+            ),
+            self.deployment,
+            "chat",
         )
         return json.loads(resp.choices[0].message.content or "{}")
 
