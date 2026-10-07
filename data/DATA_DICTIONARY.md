@@ -58,6 +58,7 @@ Credit-Risk/
 | `estimated_monthly_payment` | Float | Calculated monthly installment | Rule `POL-DTI-001` |
 | `declared_existing_monthly_debt` | Float | Stated existing debts (auto, cards) | Declared DTI component |
 | `declared_monthly_housing_expense` | Float | Rent or mortgage monthly payment | Net Disposable Income buffer check |
+| `declared_monthly_living_expenses` | Float (optional) | Stated monthly living costs (food, utilities, transport), excluding housing and debt payments. Not present in `applications.csv`; the 5 golden personas carry synthetic values (about 25–40% of net income) pending confirmation by the data owner. If absent, `POL-NDI-001` is reported as `MISSING_DATA` (no default is assumed) | Net Disposable Income, Rule `POL-NDI-001` |
 | `dependents_count` | Integer | Number of dependent children/relatives | Rule `POL-NDI-001` living allowance |
 | `bankruptcies_count` | Integer | Adverse public records | Rule `POL-SCR-002` knockout |
 | `tax_liens_count` | Integer | Outstanding government liens | Rule `POL-SCR-002` knockout |
