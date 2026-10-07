@@ -140,7 +140,6 @@ def investigate(case_input):
 
 if __name__ == "__main__":
     import json
-    import os
     from ai_engineering.orchestrator.llm_client import LLMClient
     from ai_engineering.orchestrator.agents import LLMExplanationAgent
 
@@ -160,8 +159,7 @@ if __name__ == "__main__":
     result = investigate(case_input)
 
     # Real LLM explanation
-    api_key = os.environ.get("OPENAI_API_KEY")
-    llm = LLMClient(api_key=api_key, model="gpt-4o")
+    llm = LLMClient()  # Azure OpenAI, configured from .env
     llm_agent = LLMExplanationAgent(llm_client=llm)
 
     explanation = llm_agent.explain(

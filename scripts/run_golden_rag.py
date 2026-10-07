@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from ai_engineering.orchestrator.orchestrator import investigate  # noqa: E402
+from ai_engineering.rag.mode import banner  # noqa: E402
 
 CASES = ROOT / "data" / "test_cases" / "golden_demo_cases.json"
 TRANSACTIONS = ROOT / "data" / "processed" / "transactions.json"
@@ -66,7 +67,8 @@ def main() -> None:
                 f"({rule['agreement']}) {rule.get('citation')}"
             )
 
-    print(_table(rows, ["persona", "expected_verdict", "engine_verdict", "rag_status_counts", "conflicting_rules"]))
+    print(f"Mode: {banner()}\n")
+    print(_table(rows,["persona", "expected_verdict", "engine_verdict", "rag_status_counts", "conflicting_rules"]))
     matches = sum(r[1] == r[2] for r in rows)
     print(f"\nEngine verdict matches expected: {matches}/{len(rows)}")
     if details and (args.verbose or any("unavailable" in d for d in details)):

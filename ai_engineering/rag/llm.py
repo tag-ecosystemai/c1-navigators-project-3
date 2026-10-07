@@ -6,7 +6,8 @@ import json
 import re
 from typing import Protocol
 
-from .azure_errors import call_azure
+from .azure_client import make_client
+from .azure_errors import AzureCallError, call_azure
 from .config import RAGSettings
 
 
@@ -18,17 +19,7 @@ class JSONLLM(Protocol):
 
 class AzureChatLLM:
     def __init__(self, settings: RAGSettings):
-        from openai import AzureOpenAI
-
-        if not (settings.azure_openai_endpoint and settings.azure_openai_api_key):
-            raise RuntimeError("Set AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY to use the policy checker.")
-        self.client = AzureOpenAI(
-            azure_endpoint=settings.azure_openai_endpoint,
-            api_key=settings.azure_openai_api_key,
-            api_version=settings.azure_openai_api_version,
-            timeout=settings.azure_timeout,
-            max_retries=2,
-        )
+        self.client = make_client(settings, "Set AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY to use the policy checker.")
         self.deployment = settings.chat_deployment
         self.name = f"azure:{self.deployment}"
 
@@ -43,7 +34,13 @@ class AzureChatLLM:
             self.deployment,
             "chat",
         )
-        return json.loads(resp.choices[0].message.content or "{}")
+        try:
+            return json.loads(resp.choices[0].message.content or "{}")
+        except json.JSONDecodeError as exc:
+            raise AzureCallError(
+                f"The chat deployment '{self.deployment}' did not return valid JSON. Use a chat model that "
+                "supports JSON mode (e.g. gpt-4o or gpt-4o-mini) in AZURE_OPENAI_CHAT_DEPLOYMENT."
+            ) from exc
 
 # Added a local_llm to be able to do local testing
 class LocalTestLLM:

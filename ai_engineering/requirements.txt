@@ -1,14 +1,24 @@
-# Policy RAG (ai_engineering/rag)
+# AI engine: policy RAG, orchestrator, demo scripts, ML scoring.
+# Install from the repo root:  pip install -r ai_engineering/requirements.txt
+
+# --- Policy RAG + Azure OpenAI (embeddings, rule extraction, explanations, analyst agent)
 numpy>=1.24
-scikit-learn>=1.3       # offline hashing embedder for dev/tests
 pydantic>=2.5
 python-dotenv>=1.0
-openai>=1.40            # Azure OpenAI embeddings + chat
+openai>=1.40            # AzureOpenAI client
 pypdf>=4.0              # PDF policy documents
 python-docx>=1.1        # Word policy documents
 
-# Only needed when RAG_STORE=azure_search
-azure-search-documents>=11.5
+# --- ML scoring (models/risk_model.pkl is an XGBoost classifier saved with joblib)
+joblib>=1.3
+xgboost>=2.0
+# Needed to load the XGBoost sklearn wrapper. 1.9.1's wheel is blocked by Windows Application
+# Control on the dev machine ("DLL load failed ... _cyutility"); 1.9.0 loads fine.
+scikit-learn>=1.3,<1.9.1
+pandas>=2.0             # scripts/predict_risk.py, scripts/train_risk_model.py
 
-# Tests
+# --- Optional: only when RAG_STORE=azure_search (see docs/AZURE_SETUP.md); tests use a mock
+# azure-search-documents>=11.5
+
+# --- Tests
 pytest>=8.0

@@ -45,6 +45,16 @@ python -m ai_engineering.rag.cli doctor                              # check Azu
 python scripts/run_golden_rag.py [--verbose]                         # golden cases: engine verdict vs RAG cross-check
 ```
 
+### Azure setup, demo and analyst agent
+
+- `docs/AZURE_SETUP.md`: the values the team lead provides, `.env`, `doctor`, common Azure errors.
+- `docs/DEMO.md`: fresh-clone steps and the 3-minute demo script.
+- `python scripts/demo.py --persona CUST-GOLD-001 | --all [--offline | --require-azure]` writes
+  `demo_output/<id>.html`; `python scripts/ask_agent.py` is the Azure function-calling Q&A agent.
+- All Azure clients are built by `azure_client.make_client`; `mode.banner()` names the mode in every output
+  (`Azure OpenAI: chat=..., embeddings=...` or `OFFLINE MODE - no Azure`). The offline safety net uses its own
+  index under `policy_index/offline/` and skips the RAG checker.
+
 ### Auto-ingest
 
 `data/processed/policy_index/` is gitignored, so a fresh clone has no index. `tools.get_retriever()`

@@ -146,6 +146,11 @@ def run_cross_check(
     """
     try:
         if check_fn is None:
+            from .config import get_settings
+
+            if get_settings().rag_llm.lower() == "local":
+                # the local test LLM invents rules; never present its output as a policy check
+                raise RuntimeError("offline mode (RAG_LLM=local): the Azure RAG checker was not run")
             from .tools import check_policy_compliance as check_fn  # lazy: needs Azure config
         return compare(evaluator_flags, check_fn(application))
     except Exception as exc:  # noqa: BLE001 - the RAG layer must never break the main engine

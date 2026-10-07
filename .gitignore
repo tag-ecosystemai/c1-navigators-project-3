@@ -45,3 +45,6 @@ wheels/
 .env
 .env.local
 data/processed/policy_index/
+
+# Demo output (generated HTML reports)
+demo_output/

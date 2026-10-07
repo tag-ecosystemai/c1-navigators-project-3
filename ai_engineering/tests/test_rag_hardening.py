@@ -74,7 +74,8 @@ def test_doctor_reports_failures_without_keys(monkeypatch, tmp_path, capsys):
     out = capsys.readouterr().out
     assert info.value.code == 1
     assert "[FAIL] env AZURE_OPENAI_API_KEY: unset" in out
-    assert "[FAIL] policy index" in out and "fix:" in out
+    assert "[WARN] policy index" in out and "built automatically" in out
+    assert "[FAIL] RAG_EMBEDDINGS: local" in out and "fix:" in out
 
 
 def test_doctor_never_prints_secret_values(monkeypatch, tmp_path, capsys):
@@ -83,7 +84,7 @@ def test_doctor_never_prints_secret_values(monkeypatch, tmp_path, capsys):
     monkeypatch.setenv("AZURE_OPENAI_API_KEY", "sk-super-secret")
     tools.get_retriever()  # builds the local index so the index check passes
     tools.get_retriever.cache_clear()
-    main(["doctor"])  # all checks pass: exits normally
+    main(["doctor", "--allow-offline"])  # all applicable checks pass: exits normally
     out = capsys.readouterr().out
     assert "[PASS] env AZURE_OPENAI_API_KEY: set" in out
     assert "sk-super-secret" not in out and "secret-host" not in out

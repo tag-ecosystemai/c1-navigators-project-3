@@ -1,17 +1,22 @@
-from openai import OpenAI
+from ..rag.azure_client import make_client
+from ..rag.azure_errors import call_azure
+from ..rag.config import get_settings
 
 
 class LLMClient:
-    def __init__(self, api_key, model="gpt-4o"):
-        self.client = OpenAI(api_key=api_key)
-        self.model = model
+    """Azure OpenAI chat wrapper for the explanation agent. Reads the same AZURE_OPENAI_* variables
+    as the RAG (see .env.example); `generate(prompt)` keeps its original interface."""
 
-    def generate(self, prompt: str) -> str:
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=[
-                {"role": "user", "content": prompt},
-            ],
-            temperature=0.2,
+    def __init__(self, settings=None, client=None):
+        self.settings = settings or get_settings()
+        self.client = client or make_client(self.settings)
+        self.model = self.settings.chat_deployment  # the Azure deployment name
+
+    def generate(self, prompt: str, system: str | None = None) -> str:
+        messages = ([{"role": "system", "content": system}] if system else []) + [{"role": "user", "content": prompt}]
+        response = call_azure(
+            lambda: self.client.chat.completions.create(model=self.model, messages=messages, temperature=0.2),
+            self.model,
+            "chat",
         )
         return response.choices[0].message.content
