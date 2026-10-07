@@ -4,7 +4,10 @@ import joblib
 import numpy as np
 from pathlib import Path
 
-MODEL_PATH = Path("models") / "risk_model.pkl"
+from .model_features import FEATURES
+
+# Absolute, so scoring works from any working directory.
+MODEL_PATH = Path(__file__).resolve().parents[2] / "models" / "risk_model.pkl"
 _model = None
 
 def _load_model():
@@ -16,6 +19,10 @@ def _load_model():
             _model = None
             print(f"Failed to load ML model: {exc}")
     return _model
+
+def level_for(prob):
+    return "HIGH_RISK" if prob > 0.7 else "MEDIUM_RISK" if prob > 0.4 else "LOW_RISK"
+
 
 def integrate_ml(input_data, feature_vector):
     config = input_data.get("ml", {})
@@ -39,26 +46,13 @@ def integrate_ml(input_data, feature_vector):
         )
 
     try:
-        # feature_vector["features"] should match the 8 features in order
+        # The 20 named features, in the column order the model was trained with.
         features = feature_vector["features"]
-        x = np.array([
-            features["dti"],
-            features["income_stability"],
-            features["gambling_ratio"],
-            features["variance_score"],
-            features["monthly_inflows"],
-            features["monthly_outflows"],
-            features["savings_rate"],
-            features["anomaly_score"],
-        ], dtype=float).reshape(1, -1)
+        order = list(getattr(model, "feature_names_in_", FEATURES))
+        x = np.array([features[name] for name in order], dtype=float).reshape(1, -1)
 
         prob = float(model.predict_proba(x)[0][1])
-        if prob > 0.7:
-            risk_level = "HIGH_RISK"
-        elif prob > 0.4:
-            risk_level = "MEDIUM_RISK"
-        else:
-            risk_level = "LOW_RISK"
+        risk_level = level_for(prob)
 
         # Optional: load feature importance from file if you want to expose it
         return module_result(

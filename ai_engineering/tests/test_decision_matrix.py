@@ -100,6 +100,31 @@ def test_primary_driver_names_the_deciding_rule():
     assert _classify({"POL-ELG-001": "SATISFIED", "POL-SCR-001": "Tier 1"})[0] == ELIGIBLE
 
 
+@pytest.mark.parametrize("policy,verdict,driver", [
+    # NOT_SATISFIED outranks review-class labels even when it comes later in rule order
+    ({"POL-NDI-001": "FLAG_FOR_REVIEW", "POL-TXN-003": "NOT_SATISFIED"}, REVIEW, "POL-TXN-003"),
+    ({"POL-ELG-003": "FLAG_FOR_REVIEW", "POL-DTI-001": "CONDITIONAL", "POL-TXN-002": "CAUTION"}, REVIEW, "POL-ELG-003"),
+    ({"POL-DTI-001": "CONDITIONAL", "POL-INC-001": "REVIEW_REQUIRED"}, REVIEW, "POL-DTI-001"),  # tie: rule order
+    ({"POL-TXN-001": "FLAG_FOR_REVIEW", "POL-ELG-002": "NOT_SATISFIED", "POL-NDI-001": "NOT_SATISFIED"}, REVIEW, "POL-ELG-002"),
+    ({"POL-SCR-001": "Tier 3", "POL-TXN-005": "CRITICAL_DISTRESS"}, REVIEW, "POL-TXN-005"),
+    # a decline-class rule outranks everything, wherever it sits
+    ({"POL-ELG-001": "NOT_SATISFIED", "POL-TXN-002": "KNOCKOUT"}, DECLINE, "POL-TXN-002"),
+    ({"POL-DTI-001": "NOT_SATISFIED", "POL-INC-001": "HIGH_RISK"}, DECLINE, "POL-DTI-001"),  # tie: rule order
+])
+def test_primary_driver_is_the_most_severe_rule(policy, verdict, driver):
+    assert _classify(policy) == (verdict, driver)
+
+
+def test_undisclosed_debt_persona_driver_is_the_undisclosed_debt_rule():
+    from ai_engineering.demo.cases import find_case, load_cases, load_transactions, run_case
+
+    case = find_case(load_cases(), "CUST-GOLD-004")
+    _, result = run_case(case, load_transactions())
+    decision = result["report"]["final_decision"]
+    assert result["report"]["policy_assessment"]["POL-NDI-001"] == "FLAG_FOR_REVIEW"  # still flagged, but less severe
+    assert decision == {"verdict": REVIEW, "primary_driver": "POL-TXN-003"}
+
+
 # ----------------------------------------------------------------------------- NDI (POL-NDI-001)
 
 

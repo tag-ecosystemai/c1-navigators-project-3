@@ -33,6 +33,10 @@ _KNOCKOUTS = {
 _PASSING = {"SATISFIED", "CLEAN", "HEALTHY", "Tier 1", "Tier 2", "MISSING_DATA"}
 
 
+# Severity of non-passing labels once the knockouts are ruled out (lower = more severe).
+_SEVERITY = {"NOT_SATISFIED": 1, "CRITICAL_DISTRESS": 1}  # anything else non-passing is review-class (2)
+
+
 def _classify(policy):
     """Return (verdict, primary_driver) for a dict of {rule code: evaluator label}."""
     for code, bad in _KNOCKOUTS.items():
@@ -44,9 +48,13 @@ def _classify(policy):
     # undisclosed debt, job < 6 months) and also NOT_SATISFIED rules the matrix gives no verdict
     # for (eligibility failures, negative NDI, undisclosed debt over $250). The policy does not
     # say decline for those, so a human decides rather than the engine guessing.
-    for code, value in policy.items():
-        if value not in _PASSING:
-            return "FURTHER_REVIEW_REQUIRED", code
+    # The driver is the MOST SEVERE non-clean rule (the verdict itself does not depend on this order):
+    # NOT_SATISFIED / CRITICAL_DISTRESS first, then the review-class labels (FLAG_FOR_REVIEW, CONDITIONAL,
+    # REVIEW_REQUIRED, CAUTION, VULNERABLE, Tier 3). Ties go to the rule that comes first in the policy.
+    non_passing = [(code, value) for code, value in policy.items() if value not in _PASSING]
+    if non_passing:
+        code, _ = min(enumerate(non_passing), key=lambda item: (_SEVERITY.get(item[1][1], 2), item[0]))[1]
+        return "FURTHER_REVIEW_REQUIRED", code
 
     if not policy:  # the evaluator produced nothing: never approve on an empty policy result
         return "FURTHER_REVIEW_REQUIRED", "Policy evaluation unavailable"

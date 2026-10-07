@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from ..policy_engine.policy_evaluator import ndi_buffer
 from ..utils.validation import first
+from .ml_probe import precomputed_prediction
 
 RULE_TITLES = {
     "POL-ELG-001": "Age & legal capacity",
@@ -53,16 +54,23 @@ def rule_value(code: str, app: dict, report: dict) -> str:
     return "n/a"
 
 
-def ml_summary(result: dict, ml_reason: str | None) -> dict:
+def ml_summary(result: dict, ml_reason: str | None, applicant_id: str | None = None) -> dict:
     ml = result.get("ml") or {}
     if ml.get("risk_score") is not None:
-        return {"available": True, "score": ml["risk_score"], "level": ml.get("risk_level"),
-                "text": f"ML risk score {ml['risk_score']:.3f} ({ml.get('risk_level')})"}
+        return {"available": True, "precomputed": False, "score": ml["risk_score"], "level": ml.get("risk_level"),
+                "text": f"ML risk score {ml['risk_score']:.3f} ({ml.get('risk_level')}) - live model"}
     reason = ml_reason
     if reason is None:
         errors = [e["message"] for e in result["system"]["errors"] if e["category"] == "ml_failure"]
         reason = errors[-1] if errors else "ML scoring was not enabled"
-    return {"available": False, "score": None, "level": None, "text": f"ML scoring unavailable: {reason}"}
+    # Live scoring failed: show the stored batch prediction, clearly labelled, if this applicant has one.
+    row = precomputed_prediction(applicant_id) if applicant_id else None
+    if row:
+        return {"available": True, "precomputed": True, "score": row["score"], "level": row["level"],
+                "text": (f"ML risk score {row['score']:.3f} ({row['level']}) - precomputed batch prediction "
+                         f"(data/processed/ml_predictions.csv); live scoring unavailable: {reason}")}
+    return {"available": False, "precomputed": False, "score": None, "level": None,
+            "text": f"ML scoring unavailable: {reason}"}
 
 
 def build_view(case: dict, application: dict, result: dict, banner: str, azure_mode: bool,
@@ -81,7 +89,7 @@ def build_view(case: dict, application: dict, result: dict, banner: str, azure_m
         "driver_title": RULE_TITLES.get(report["final_decision"]["primary_driver"], ""),
         "rules": rules,
         "data_gaps": report.get("data_gaps", []),
-        "ml": ml_summary(result, ml_reason),
+        "ml": ml_summary(result, ml_reason, case["applicant_id"]),
         "evidence": result["evidence"],
         "cross_check": report.get("policy_cross_check", {}),
         "system": result["system"],

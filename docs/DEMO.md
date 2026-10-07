@@ -57,16 +57,21 @@ embeddings deployment Y. It is decision support; the analyst decides."*
   (Offline you see the retrieved policy paragraph for `POL-INC-001` instead.)
 
 **1:55 - Undisclosed debt, review (45 s).** `python scripts/demo.py --persona CUST-GOLD-004`
-- Verdict `FURTHER_REVIEW_REQUIRED`. Point at **two** flagged rows: `POL-TXN-003` (undisclosed
-  debt, $740/month found in the bank statement, none declared) and `POL-NDI-001` (disposable income
-  $591.74 against a $1,000 buffer for 2 dependents). The "primary driver" line shows `POL-NDI-001`
-  because it is the first non-clean rule in the list; say that the undisclosed debt is the story.
+- Verdict `FURTHER_REVIEW_REQUIRED`, primary driver `POL-TXN-003` (undisclosed debt: $740/month found in
+  the bank statement, none declared). The driver is the most severe non-clean rule. A second row,
+  `POL-NDI-001` (disposable income $591.74 against a $1,000 buffer for 2 dependents), is also flagged.
 - *"The policy gives no automatic verdict for hidden debt, so the engine sends it to a person."*
 
 **2:40 - One question to the agent (20 s).**
 `python scripts/ask_agent.py -q "Why was CUST-GOLD-002 declined? Cite the policy."`
 - It calls `get_case_report` and `search_policies` and answers with rule codes. Say *"it can only answer
   from those tools and cannot change a decision."*
+
+**About the ML score (if asked).** It is a second opinion, never the verdict. The model was trained on
+these same 50 synthetic applicants to predict "decline", so its scores are in-sample (the engine reproduces
+them exactly: `python scripts/check_ml_parity.py`). It rates `CUST-GOLD-002` low risk (0.05) even though the
+rules recommend decline, because the declared-vs-actual income gap is not what the model learned from. Say
+that this is why a human reads both.
 
 ## If something fails
 
@@ -76,7 +81,7 @@ embeddings deployment Y. It is decision support; the analyst decides."*
 | 429 / quota in a report | Wait 60 s and rerun that persona; or show the HTML reports you generated beforehand. |
 | `RAG checker unavailable: ...` in the Azure section | The rest of the report is still valid (it comes from the rule engine). Say the cross-check is optional and the engine does not depend on it. |
 | Explanation shows `Generated from rules, not by an LLM` plus a NOTE | The Azure explanation failed validation or errored; the template is built from the same facts. Nothing is wrong with the decision. |
-| `ML scoring unavailable: ...` | Known and expected today: `models/risk_model.pkl` was trained on 20 features, the engine supplies 8 (and `xgboost` must be installed). Say ML scoring is wired but disabled until the feature set is aligned. Do not retrain on stage. |
+| `ML risk score ... precomputed batch prediction` | Live scoring could not run (usually `xgboost` or `scikit-learn` not installed). The number is the stored batch prediction from `data/processed/ml_predictions.csv`, and the line says so; say that too. `ML scoring unavailable: ...` means there is no stored row either. Do not retrain on stage. |
 | `ask_agent.py` fails | Skip it; show the `CUST-GOLD-002` HTML report and read the cited clause instead. |
 | Wi-Fi down | `--offline` is designed for this. The banner and every HTML page say OFFLINE MODE. |
 | `import sklearn` / DLL blocked error on Windows | `pip install "scikit-learn<1.9.1"`. It only affects the ML probe; everything else runs. |

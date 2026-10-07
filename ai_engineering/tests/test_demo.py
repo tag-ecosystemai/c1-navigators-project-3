@@ -194,8 +194,14 @@ def test_ml_unavailable_reason_is_reported_without_crashing(cases, monkeypatch):
     case = all_cases[0]
     application, result = run_case(case, txns, ml_enabled=s.ml_enabled)
     view = build_view(case, application, result, s.banner, False, s.ml_reason)
-    assert view["ml"]["text"] == "ML scoring unavailable: ModuleNotFoundError: No module named 'xgboost'"
+    # live scoring failed, so the stored batch prediction is shown, clearly labelled
+    assert view["ml"]["precomputed"] is True
+    assert "precomputed batch prediction" in view["ml"]["text"]
+    assert "live scoring unavailable: ModuleNotFoundError: No module named 'xgboost'" in view["ml"]["text"]
     assert result["system"]["status"] == "ok"
+    # an applicant with no stored row shows the plain "unavailable" message
+    unknown = build_view({**case, "applicant_id": "CUST-NOPE"}, application, result, s.banner, False, s.ml_reason)
+    assert unknown["ml"]["text"] == "ML scoring unavailable: ModuleNotFoundError: No module named 'xgboost'"
 
 
 # ------------------------------------------------------------------ demo script end to end (offline)
