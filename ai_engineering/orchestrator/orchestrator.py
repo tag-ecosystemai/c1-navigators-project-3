@@ -9,6 +9,7 @@ from ..anomaly_detection.anomaly_scoring import analyse_anomalies
 from ..policy_engine.policy_evaluator import evaluate_policies
 from ..ml_scoring.feature_builder import feature_result
 from ..ml_scoring.ml_integration import integrate_ml
+from ..rag.cross_check import run_cross_check
 
 
 def _decision(policy, financial, transactions, application):
@@ -46,6 +47,8 @@ def investigate(case_input):
     policy = evaluate_policies(data, financial["data"], transactions["data"])
     modules.append(policy)
 
+    policy_check = run_cross_check({**data["application"], **financial["data"], **transactions["data"]}, policy["data"])
+
     features = feature_result(
         data, financial["data"], transactions["data"], anomalies["data"]
     )
@@ -75,6 +78,7 @@ def investigate(case_input):
         "transaction_assessment": transactions["data"],
         "anomaly_assessment": anomalies["data"],
         "policy_assessment": policy["data"],
+        "policy_cross_check": policy_check,
         "risk_assessment": ml["data"],
         "final_decision": {
             "verdict": verdict,
