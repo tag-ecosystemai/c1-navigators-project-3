@@ -5,29 +5,51 @@
 
 ---
 
-## 1. Overview of Data Deliverables
-This repository contains a complete, production-grade data suite designed specifically to fulfill all requirements outlined in **Section 8** and **Section 11** of the PRD.
+## 1. Overview of Data Deliverables & Educational Architecture
+This repository provides a complete dual-layer data architecture specifically aligned with the requirement:
+**"Use real open lending/credit datasets and public regulatory policy documents. Great for teaching predictive ML vs generative AI."**
 
 ```text
 Credit-Risk/
 ├── data/
 │   ├── DATA_DICTIONARY.md           <-- You are here
-│   ├── policies/                    <-- For Gabriel & Hannah (Vector DB / RAG)
-│   │   ├── 01_general_credit_eligibility_policy.md
-│   │   ├── 02_affordability_and_debt_service_policy.md
-│   │   ├── 03_bank_statement_and_transaction_investigation_policy.md
-│   │   ├── 04_underwriting_referral_and_exception_matrix.md
+│   │
+│   ├── raw/                         <-- REAL OPEN DATASET (Predictive ML)
+│   │   └── real_open_datasets/
+│   │       ├── uci_german_credit.csv  # 1,000 real borrower loans (UCI Statlog benchmark)
+│   │       └── README.md              # Code example for training Random Forest / XGBoost
+│   │
+│   ├── policies/                    <-- PUBLIC REGULATORY & POLICY DOCS (Generative AI / RAG)
+│   │   ├── public_regulations/      # Official statutory standards
+│   │   │   ├── 01_cfpb_ability_to_repay_rule_12cfr1026.md      (US CFPB ATR Standards)
+│   │   │   ├── 02_fca_conc5_responsible_lending_standards.md    (UK FCA CONC 5 Rules)
+│   │   │   └── 03_occ_consumer_credit_examination_handbook.md   (US OCC Credit Handbook)
+│   │   ├── 01_general_credit_eligibility_policy.md             (Bank underwriting standards)
+│   │   ├── 02_affordability_and_debt_service_policy.md          (DTI & LTI rules)
+│   │   ├── 03_bank_statement_and_transaction_investigation_policy.md (Red flags & anomalies)
+│   │   ├── 04_underwriting_referral_and_exception_matrix.md     (Decision matrix & schema)
 │   │   └── README.md
-│   ├── processed/                   <-- For Ruffy (DB/API) & Danny (Frontend UI)
-│   │   ├── applications.csv         (50 applicants)
+│   │
+│   ├── processed/                   <-- MULTI-SOURCE INVESTIGATION MVP DATASET
+│   │   ├── applications.csv         # 50 credit application records
 │   │   ├── applications.json
-│   │   ├── transactions.csv         (3,590 90-day bank transactions)
+│   │   ├── transactions.csv         # 3,590 90-day bank transactions linked by applicant_id
 │   │   └── transactions.json
+│   │
 │   └── test_cases/
-│       └── golden_demo_cases.json   <-- 5 Flagship Personas for Live Demos
+│       └── golden_demo_cases.json   # 5 Flagship Personas for Live Analyst Demos
 └── scripts/
-    └── generate_synthetic_data.py   <-- Standalone generator (no external dependencies)
+    └── generate_synthetic_data.py   # Generator pipeline for linked transactions
 ```
+
+### The Architectural Distinction: Predictive ML vs. Generative AI
+1. **Predictive Machine Learning (Supervised Learning):**
+   * **Dataset:** Real open dataset (`uci_german_credit.csv` from UCI ML Repository).
+   * **Task:** Quantitative classification model (e.g. Scikit-learn, XGBoost) trained on historical borrower attributes to output a **Probability of Default (PD)** or binary credit risk score (`credit_risk`: 0 = Default, 1 = Good).
+2. **Generative AI & Agentic RAG:**
+   * **Dataset:** Official public regulatory policy texts (`data/policies/public_regulations/`) and banking underwriting manuals.
+   * **Task:** Vector DB semantic retrieval, qualitative evidence synthesis, bank transaction anomaly investigation, and drafting the final human-readable investigation report for credit analysts.
+
 
 ---
 
