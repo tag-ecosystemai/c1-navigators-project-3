@@ -4,6 +4,7 @@
     python scripts/demo.py --all                          # all five
     python scripts/demo.py --all --offline                # safety net: no Azure at all
     python scripts/demo.py --persona CUST-GOLD-002 --require-azure
+    python scripts/demo.py --persona CUST-GOLD-002 --agents --offline   # via the OrchestratorAgent path
 
 Azure is required (and preflight-checked) by default whenever the AZURE_OPENAI_* variables are set;
 if it is not working the demo stops and prints which check failed and how to fix it. --offline forces
@@ -19,7 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from ai_engineering.demo.cases import find_case, load_cases, load_transactions, run_case  # noqa: E402
+from ai_engineering.demo.cases import find_case, load_cases, load_transactions, run_case, run_case_agents  # noqa: E402
 from ai_engineering.demo.explain import explain  # noqa: E402
 from ai_engineering.demo.render import console_report, html_report, retrieve_policy_text  # noqa: E402
 from ai_engineering.demo.session import PreflightFailed, start_session  # noqa: E402
@@ -28,11 +29,17 @@ from ai_engineering.demo.view import build_view  # noqa: E402
 OUTPUT_DIR = ROOT / "demo_output"
 
 
-def run_one(session, case: dict, transactions: list[dict]) -> dict:
-    application, result = run_case(case, transactions, ml_enabled=session.ml_enabled)
+def run_one(session, case: dict, transactions: list[dict], agents: bool = False) -> dict:
+    if agents:
+        application, result = run_case_agents(case, transactions, ml_enabled=session.ml_enabled, llm_client=session.llm)
+        explanation = {**result["explanation_detail"], "text": result["explanation"]}  # written by the agent
+        print("Path: OrchestratorAgent (data -> compliance -> credit risk -> explanation)")
+    else:
+        application, result = run_case(case, transactions, ml_enabled=session.ml_enabled)
     view = build_view(case, application, result, session.banner, session.azure_mode, session.ml_reason)
     policy_text = None if session.azure_mode else retrieve_policy_text([r["code"] for r in view["rules"]])
-    explanation = explain(view, session.llm)
+    if not agents:
+        explanation = explain(view, session.llm)
     print(console_report(view, explanation, policy_text))
     OUTPUT_DIR.mkdir(exist_ok=True)
     path = OUTPUT_DIR / f"{case['applicant_id']}.html"
@@ -50,6 +57,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--require-azure", action="store_true", default=None,
                         help="fail loudly with the preflight output if Azure is not working (default when Azure env vars are set)")
     parser.add_argument("--offline", action="store_true", help="force the offline safety-net mode (no Azure)")
+    parser.add_argument("--agents", action="store_true",
+                        help="run the OrchestratorAgent path (same verdict as the default investigate() path)")
     args = parser.parse_args(argv)
 
     if hasattr(sys.stdout, "reconfigure"):
@@ -74,7 +83,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     transactions = load_transactions()
 
-    views = [run_one(session, case, transactions) for case in selected]
+    views = [run_one(session, case, transactions, agents=args.agents) for case in selected]
 
     if args.all:
         print("=" * 78 + f"\n {session.banner}\n" + "=" * 78)

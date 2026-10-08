@@ -34,13 +34,28 @@ def application_of(case: dict) -> dict:
     return {k: v for k, v in case.items() if k not in LABEL_FIELDS}
 
 
-def run_case(case: dict, transactions: list[dict], ml_enabled: bool = False) -> tuple[dict, dict]:
-    """Return (application, investigate() result). The answer key is stripped first."""
-    from ..orchestrator.orchestrator import investigate
-
+def case_payload(case: dict, transactions: list[dict], ml_enabled: bool = False) -> tuple[dict, dict]:
+    """(application, engine input). The answer key is stripped first."""
     application = application_of(case)
     txns = [t for t in transactions if t.get("applicant_id") == case["applicant_id"]]
     payload = {"application": application, "transactions": txns}
     if ml_enabled:
         payload["ml"] = {"enabled": True}
+    return application, payload
+
+
+def run_case(case: dict, transactions: list[dict], ml_enabled: bool = False) -> tuple[dict, dict]:
+    """Return (application, investigate() result)."""
+    from ..orchestrator.orchestrator import investigate
+
+    application, payload = case_payload(case, transactions, ml_enabled)
     return application, investigate(payload)
+
+
+def run_case_agents(case: dict, transactions: list[dict], ml_enabled: bool = False, llm_client=None) -> tuple[dict, dict]:
+    """Same as run_case, but through OrchestratorAgent (data, compliance, credit risk, explanation agents).
+    The result has investigate()'s shape plus "explanation" and "explanation_detail"."""
+    from ..orchestrator.agents import OrchestratorAgent
+
+    application, payload = case_payload(case, transactions, ml_enabled)
+    return application, OrchestratorAgent(llm_client=llm_client).run(payload)
