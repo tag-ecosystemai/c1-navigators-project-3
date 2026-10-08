@@ -1,3 +1,5 @@
+import asyncio
+
 from app.schemas.ai_results import EvidenceItem, PolicyAnalysisResult
 
 from ai_engineering.rag.tools import check_policy_compliance
@@ -13,7 +15,7 @@ class PolicyRAGInterface:
     """
 
     async def analyze_application(self, application_data: dict) -> PolicyAnalysisResult:
-        rag_result = check_policy_compliance(application_data)
+        rag_result = await asyncio.to_thread(check_policy_compliance, application_data)
 
         policy_findings = []
         risk_flags = []

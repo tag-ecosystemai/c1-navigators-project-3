@@ -12,6 +12,8 @@ from typing import Protocol
 
 import numpy as np
 
+from .azure_client import make_client
+from .azure_errors import call_azure
 from .config import RAGSettings
 
 
@@ -29,17 +31,10 @@ def _normalise(v: np.ndarray) -> np.ndarray:
 
 class AzureOpenAIEmbedder:
     def __init__(self, settings: RAGSettings, batch_size: int = 64):
-        from openai import AzureOpenAI
-
-        if not (settings.azure_openai_endpoint and settings.azure_openai_api_key):
-            raise RuntimeError(
-                "Azure OpenAI is not configured. Set AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY "
-                "in .env, or set RAG_EMBEDDINGS=local to use the offline embedder."
-            )
-        self.client = AzureOpenAI(
-            azure_endpoint=settings.azure_openai_endpoint,
-            api_key=settings.azure_openai_api_key,
-            api_version=settings.azure_openai_api_version,
+        self.client = make_client(
+            settings,
+            "Azure OpenAI is not configured. Set AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY "
+            "in .env, or set RAG_EMBEDDINGS=local to use the offline embedder.",
         )
         self.deployment = settings.embedding_deployment
         self.batch_size = batch_size
@@ -49,7 +44,11 @@ class AzureOpenAIEmbedder:
         vectors: list[list[float]] = []
         for i in range(0, len(texts), self.batch_size):
             batch = [t.replace("\n", " ") for t in texts[i : i + self.batch_size]]
-            resp = self.client.embeddings.create(model=self.deployment, input=batch)
+            resp = call_azure(
+                lambda b=batch: self.client.embeddings.create(model=self.deployment, input=b),
+                self.deployment,
+                "embedding",
+            )
             vectors.extend(d.embedding for d in sorted(resp.data, key=lambda d: d.index))
         return _normalise(np.array(vectors, dtype=np.float32))
 

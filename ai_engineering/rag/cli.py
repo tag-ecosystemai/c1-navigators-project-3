@@ -4,6 +4,7 @@
     python -m ai_engineering.rag.cli search "maximum debt to income ratio"
     python -m ai_engineering.rag.cli eval
     python -m ai_engineering.rag.cli check data/test_cases/sample_application.json
+    python -m ai_engineering.rag.cli doctor
 """
 
 from __future__ import annotations
@@ -61,6 +62,10 @@ def cmd_check(args: argparse.Namespace) -> None:
     application = json.loads(Path(args.application).read_text())
     checker = PolicyChecker(PolicyRetriever(settings), AzureChatLLM(settings))
     result = checker.check(application, use_cache=not args.no_cache)
+    if not args.json:
+        from .mode import banner
+
+        print(f"Mode: {banner(settings)}")
     if args.json:
         print(json.dumps(result.to_dict(), indent=2, default=str))
         return
@@ -69,6 +74,18 @@ def cmd_check(args: argparse.Namespace) -> None:
         print(f"{r.status.upper():<14} [{r.severity}] {r.requirement}")
         print(f"{'':<14} {r.explanation}")
         print(f"{'':<14} Source: {r.citation}{'' if r.quote_verified else '  (quote not verified)'}\n")
+
+
+def cmd_doctor(args: argparse.Namespace) -> None:
+    """Preflight the Azure setup. Prints set/unset for env vars, never their values."""
+    from .doctor import format_checks, ok, run_checks
+
+    settings = get_settings()
+    checks = run_checks(settings, allow_offline=args.allow_offline)
+    print(format_checks(settings, checks))
+    if not ok(checks):
+        sys.exit(1)
+
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -94,6 +111,10 @@ def main(argv: list[str] | None = None) -> None:
     c.add_argument("--json", action="store_true")
     c.add_argument("--no-cache", action="store_true")
     c.set_defaults(func=cmd_check)
+
+    d = sub.add_parser("doctor", help="Preflight: env vars, Azure deployments, index (exit 1 on failure)")
+    d.add_argument("--allow-offline", action="store_true", help="do not fail when RAG_EMBEDDINGS/RAG_LLM are local")
+    d.set_defaults(func=cmd_doctor)
 
     args = p.parse_args(argv)
     try:

@@ -52,6 +52,8 @@ class RAGSettings:
         default_factory=lambda: os.getenv("AZURE_OPENAI_EMBEDDING_DEPLOYMENT", "text-embedding-3-small")
     )
     chat_deployment: str = field(default_factory=lambda: os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT", "gpt-4o-mini"))
+    # Seconds before an Azure OpenAI request is abandoned (the client retries twice on 429/5xx)
+    azure_timeout: float = field(default_factory=lambda: float(os.getenv("RAG_AZURE_TIMEOUT", "30")))
 
     # Azure AI Search
     azure_search_endpoint: str | None = field(default_factory=lambda: os.getenv("AZURE_SEARCH_ENDPOINT"))

@@ -1,5 +1,10 @@
-import pandas as pd
+import sys
 from pathlib import Path
+
+import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from ai_engineering.ml_scoring.model_features import FEATURES, derive_features  # noqa: E402
 
 DATA_DIR = Path("data/processed")
 
@@ -23,79 +28,29 @@ def aggregate_transactions(txns: pd.DataFrame) -> pd.DataFrame:
     )
     return grouped.reset_index()
 
-def build_features(apps: pd.DataFrame, txns_agg: pd.DataFrame) -> pd.DataFrame:
+def build_features(apps: pd.DataFrame, txns_agg: pd.DataFrame, txns: pd.DataFrame) -> pd.DataFrame:
+    """Applicants with transactions (inner join, as before) plus the model features.
+
+    The 20 features come from ai_engineering.ml_scoring.model_features.derive_features, the same
+    function the live engine uses to score a case, so training and scoring cannot drift apart.
+    """
     df = apps.merge(txns_agg, on="applicant_id", how="inner")
+    by_applicant = {key: group.to_dict("records") for key, group in txns.groupby("applicant_id")}
 
-    # Financial capacity
-    df["dti"] = df["calculated_dti_pct"]
-    df["loan_to_income"] = df["requested_loan_amount"] / (df["declared_monthly_net_income"] + 1e-6)
-    df["expense_to_income"] = df["declared_monthly_housing_expense"] / (df["declared_monthly_net_income"] + 1e-6)
-    df["debt_to_income"] = df["declared_existing_monthly_debt"] / (df["declared_monthly_net_income"] + 1e-6)
-
-    # Creditworthiness
-    df["credit_score"] = df["credit_score"]
-    df["credit_score_tier_num"] = df["credit_score_tier"].map({
-        "TIER_1_PRIME": 1,
-        "TIER_2_NEAR_PRIME": 2,
-        "TIER_3_SUBPRIME": 3,
-        "TIER_4_HIGH_RISK": 4
-    }).fillna(0)
-
-    # Behavioral risk
-    df["income_stability"] = (df["declared_monthly_net_income"] - df["actual_monthly_salary"]).abs() / (df["actual_monthly_salary"] + 1e-6)
-    df["gambling_ratio"] = df["gambling_spend"] / (df["actual_monthly_salary"] + 1e-6)
-    df["savings_rate"] = (
-        df["actual_monthly_salary"]
-        - df["declared_existing_monthly_debt"]
-        - df["declared_monthly_housing_expense"]
-    ) / (df["actual_monthly_salary"] + 1e-6)
-
-    # Repayment burden
-    df["monthly_payment_ratio"] = df["estimated_monthly_payment"] / (df["declared_monthly_net_income"] + 1e-6)
-    df["lti_ratio"] = df["calculated_lti_ratio"]
-
-    # Transactional dynamics
-    df["anomaly_score"] = df["anomaly_count"]
-    df["txn_density"] = df["txn_count"] / df["loan_term_months"].clip(lower=1)
-    df["avg_txn_amount"] = df["avg_txn_amount"]
-
-    # Demographic / structural
-    df["dependents_count"] = df["dependents_count"]
-    df["bankruptcies_count"] = df["bankruptcies_count"]
-    df["tax_liens_count"] = df["tax_liens_count"]
-    df["employment_length_months"] = df["employment_length_months"]
-
-    feature_cols = [
-        "dti",
-        "loan_to_income",
-        "expense_to_income",
-        "debt_to_income",
-        "credit_score",
-        "credit_score_tier_num",
-        "income_stability",
-        "gambling_ratio",
-        "savings_rate",
-        "monthly_payment_ratio",
-        "lti_ratio",
-        "monthly_inflows",
-        "monthly_outflows",
-        "anomaly_score",
-        "txn_density",
-        "avg_txn_amount",
-        "dependents_count",
-        "bankruptcies_count",
-        "tax_liens_count",
-        "employment_length_months",
-    ]
-
-    X = df[feature_cols].fillna(0.0)
-    return df, X
+    features = pd.DataFrame(
+        [derive_features(row, by_applicant[row["applicant_id"]]) for row in df.to_dict("records")],
+        columns=list(FEATURES),
+        index=df.index,
+    )
+    for column in FEATURES:
+        df[column] = features[column]
+    return df, features
 
 def main():
     apps, txns = load_data()
     txns_agg = aggregate_transactions(txns)
 
-    df, X = build_features(apps, txns_agg)
+    df, X = build_features(apps, txns_agg, txns)
 
     df["default_flag"] = derive_default_flag(df)
     y = df["default_flag"]
