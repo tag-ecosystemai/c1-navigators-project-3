@@ -22,7 +22,6 @@ export const MLRiskCard: React.FC<MLRiskCardProps> = ({ ml }) => {
   const scorePct = Math.round(ml.score * 100);
   const isHigh = ml.level === "HIGH_RISK" || ml.score >= 0.5;
   const isMedium = ml.level === "MEDIUM_RISK" || (ml.score >= 0.2 && ml.score < 0.5);
-  const isLow = ml.level === "LOW_RISK" || ml.score < 0.2;
 
   const scoreColor = isHigh
     ? "text-rose-400"

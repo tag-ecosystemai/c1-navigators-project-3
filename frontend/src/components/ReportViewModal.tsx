@@ -1,5 +1,5 @@
 import React from "react";
-import { X, Printer, ShieldCheck, UserCheck, AlertTriangle } from "lucide-react";
+import { X, Printer, ShieldCheck, UserCheck } from "lucide-react";
 import { InvestigationData } from "../types";
 
 interface ReportViewModalProps {

@@ -3,7 +3,6 @@ import {
   CheckCircle2,
   AlertTriangle,
   XCircle,
-  ShieldAlert,
   UserCheck,
   ArrowRight,
   FileText,
