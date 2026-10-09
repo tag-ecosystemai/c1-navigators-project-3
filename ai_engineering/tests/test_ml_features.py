@@ -19,6 +19,17 @@ ROOT = Path(__file__).resolve().parents[2]
 PROCESSED = ROOT / "data" / "processed"
 
 
+def _optional(module: str):
+    """Import an optional heavy dependency, or skip. Catches any failure, not only ImportError: a blocked DLL
+    (Windows Application Control) can leave a half-initialised module that raises AttributeError later."""
+    import importlib
+
+    try:
+        return importlib.import_module(module)
+    except Exception as exc:  # noqa: BLE001
+        pytest.skip(f"{module} cannot be imported here: {type(exc).__name__}")
+
+
 def _load():
     features = list(csv.DictReader(open(PROCESSED / "ml_features.csv", encoding="utf-8")))
     apps = json.loads((PROCESSED / "applications.json").read_text(encoding="utf-8"))
@@ -83,7 +94,7 @@ def test_risk_levels():
 
 
 def test_training_script_uses_the_shared_features():
-    pd = pytest.importorskip("pandas")
+    pd = _optional("pandas")
     sys.path.insert(0, str(ROOT / "scripts"))
     import build_ml_dataset as script
 
@@ -96,7 +107,7 @@ def test_training_script_uses_the_shared_features():
 
 def test_live_scores_match_ml_predictions_csv():
     """Ground truth: the stored batch predictions. Skipped where xgboost is not installed."""
-    pytest.importorskip("xgboost")
+    _optional("xgboost")
     try:
         import joblib
 
