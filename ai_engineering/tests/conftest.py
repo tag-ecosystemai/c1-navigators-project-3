@@ -69,6 +69,11 @@ def _isolate_rag_env(tmp_path):
     from ai_engineering.rag import mode
 
     saved = {k: v for k, v in os.environ.items() if k.startswith(("RAG_", "AZURE_"))}
+    # A developer's .env may hold real Azure credentials (it is loaded when the package is imported). Tests
+    # must never use them: drop them so nothing can reach the network. Tests that need Azure use `azure_env`
+    # with a fake client.
+    for name in ("AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_API_KEY", "AZURE_SEARCH_ENDPOINT", "AZURE_SEARCH_API_KEY"):
+        os.environ.pop(name, None)
     os.environ["RAG_INDEX_DIR"] = str(tmp_path / "default_index")
     mode.reset_caches()
     yield

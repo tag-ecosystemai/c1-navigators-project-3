@@ -88,7 +88,8 @@ class _LLM:
 
 def test_llm_explanation_is_used_when_valid(cases):
     view = _view(cases)
-    llm = _LLM("The declared income is not supported by deposits (POL-INC-001), so the engine recommends decline.")
+    llm = _LLM("The declared income is not supported by deposits (POL-INC-001), so the engine recommends decline. "
+               "The policy checker was not run (offline mode).")
     out = explain(view, llm)
     assert out["source"] == "azure:demo-chat" and "POL-INC-001" in out["text"]
     prompt, system = llm.seen
