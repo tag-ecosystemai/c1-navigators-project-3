@@ -44,16 +44,30 @@ export interface ApplicantInfo {
   name: string;
   age: number;
   monthly_income: string;
+  actual_monthly_salary?: string;
+  income_variance_pct?: number;
   monthly_expenses: string;
   existing_debt: string;
   requested_amount: string;
   loan_tenure_months: number;
   purpose: string;
   credit_score: number;
+  credit_score_tier?: string;
   employment_tenure_months: number;
+  employer_name?: string;
+  job_title?: string;
+  housing_status?: string;
   dependents_count: number;
   bankruptcies_count: number;
   tax_liens_count: number;
+  calculated_dti_pct?: number;
+  calculated_lti_ratio?: number;
+  shadow_dti_pct?: number;
+  estimated_monthly_payment?: number;
+  undisclosed_debt_total?: number;
+  gambling_ratio?: number;
+  nsf_count?: number;
+  window_dressing_amount?: number;
 }
 
 export type VerdictCode =
@@ -168,6 +182,18 @@ export interface ChecklistItem {
   completed?: boolean;
 }
 
+export interface TransactionItem {
+  id: string;
+  date: string;
+  description: string;
+  category: "income" | "expense" | "debt_payment" | "gambling" | "transfer" | "fee";
+  amount: number;
+  type: "inflow" | "outflow";
+  balance: number;
+  flagged?: boolean;
+  flagReason?: string;
+}
+
 export interface InvestigationData {
   ok: boolean;
   mode: "azure" | "offline";
@@ -187,6 +213,7 @@ export interface InvestigationData {
   explanation: Explanation;
   checklist: ChecklistItem[];
   data_gaps: string[];
+  transactions?: TransactionItem[];
 }
 
 export interface InvestigateError {
@@ -196,3 +223,5 @@ export interface InvestigateError {
   available?: string[];
   mode?: string;
 }
+
+export type ViewTab = "overview" | "rules" | "forensics" | "ml" | "memo";

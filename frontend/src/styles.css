@@ -5,30 +5,42 @@
 @layer base {
   :root {
     --bg-primary: #07111f;
-    --bg-card: #0c1828;
-    --bg-card-secondary: #112238;
+    --bg-secondary: #0c1828;
+    --bg-card: #0e1e32;
+    --bg-card-hover: #132740;
     --border-subtle: #1e334d;
-    --border-muted: #2a4365;
-    --text-primary: #f1f5f9;
+    --border-muted: #2d4a6f;
+    --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
     --text-muted: #64748b;
+    color-scheme: dark;
   }
 
-  .light {
+  html.light {
     --bg-primary: #f8fafc;
+    --bg-secondary: #f1f5f9;
     --bg-card: #ffffff;
-    --bg-card-secondary: #f1f5f9;
+    --bg-card-hover: #f8fafc;
     --border-subtle: #e2e8f0;
     --border-muted: #cbd5e1;
     --text-primary: #0f172a;
     --text-secondary: #475569;
     --text-muted: #94a3b8;
+    color-scheme: light;
   }
 
   body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Accessible focus indicators */
+  :focus-visible {
+    outline: 2px solid #0c8ce9;
+    outline-offset: 2px;
   }
 }
 
@@ -39,23 +51,35 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(15, 23, 42, 0.4);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.8);
+  background: rgba(71, 85, 105, 0.6);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 1);
+  background: rgba(100, 116, 139, 0.9);
 }
 
-@keyframes pulse-subtle {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-.animate-pulse-subtle {
-  animation: pulse-subtle 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+/* Print Optimization */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  header, nav, footer, button, .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-page {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
 }
