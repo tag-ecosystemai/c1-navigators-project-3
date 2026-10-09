@@ -10,8 +10,10 @@ import { ExplanationPanel } from "./components/ExplanationPanel";
 import { ComparisonModal } from "./components/ComparisonModal";
 import { KeyboardShortcutsModal } from "./components/KeyboardShortcutsModal";
 import { ReportViewModal } from "./components/ReportViewModal";
+import { TabNavigation } from "./components/TabNavigation";
+import { FinancialForensics } from "./components/FinancialForensics";
 import { fetchHealth, fetchPersonas, investigateApplicant } from "./api/client";
-import { HealthResponse, Persona, InvestigationData } from "./types";
+import { HealthResponse, Persona, InvestigationData, ViewTab } from "./types";
 import { AlertTriangle, Loader2 } from "lucide-react";
 
 export const App: React.FC = () => {
@@ -23,6 +25,7 @@ export const App: React.FC = () => {
   const [investigationData, setInvestigationData] = useState<InvestigationData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<ViewTab>("overview");
 
   // Modals state
   const [isCompareOpen, setIsCompareOpen] = useState(false);
@@ -98,6 +101,7 @@ export const App: React.FC = () => {
   const handleSelectPersona = (id: string) => {
     if (id === selectedId && investigationData) return;
     setSelectedId(id);
+    setActiveTab("overview");
     runInvestigation(id, false);
   };
 
@@ -134,6 +138,7 @@ export const App: React.FC = () => {
         setIsCompareOpen(false);
         setIsShortcutsOpen(false);
         setIsReportOpen(false);
+        setActiveTab((prev) => (prev === "memo" ? "overview" : prev));
       }
     };
 
@@ -149,7 +154,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen ${theme === "dark" ? "bg-[#07111f] text-slate-100" : "bg-slate-50 text-slate-900"}`}>
+    <div className={`min-h-screen bg-surface-primary text-content-primary`}>
       {/* Top Navigation */}
       <Navbar
         health={health}
@@ -186,7 +191,7 @@ export const App: React.FC = () => {
 
         {/* Loading Spinner Skeleton */}
         {loading && !investigationData && (
-          <div className="flex flex-col items-center justify-center py-24 text-slate-400 gap-3">
+          <div className="flex flex-col items-center justify-center py-24 text-content-muted gap-3">
             <Loader2 className="h-10 w-10 animate-spin text-brand-500" />
             <p className="text-sm font-medium">Investigating credit application with AI agents...</p>
           </div>
@@ -203,35 +208,79 @@ export const App: React.FC = () => {
               isInvestigating={loading}
             />
 
-            {/* Verdict Hero Card */}
-            <VerdictHero
-              verdict={investigationData.verdict}
-              applicant={investigationData.applicant}
-              onOpenReport={() => setIsReportOpen(true)}
-              onScrollToRules={scrollToRules}
+            <TabNavigation
+              activeTab={activeTab}
+              onTabChange={(tab) => {
+                setActiveTab(tab);
+                if (tab === "memo") {
+                  setIsReportOpen(true);
+                }
+              }}
+              disabled={loading}
             />
 
-            {/* 2-Column Main Analysis Section */}
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-              {/* Left Column: 14-Rule Policy Matrix (7 Cols) */}
-              <div className="lg:col-span-7 space-y-6">
+            {/* Conditional Content based on activeTab */}
+            {activeTab === "overview" && (
+              <>
+                {/* Verdict Hero Card */}
+                <VerdictHero
+                  verdict={investigationData.verdict}
+                  applicant={investigationData.applicant}
+                  onOpenReport={() => {
+                    setIsReportOpen(true);
+                    setActiveTab("memo");
+                  }}
+                  onScrollToRules={scrollToRules}
+                />
+
+                {/* 2-Column Main Analysis Section */}
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+                  {/* Left Column: 14-Rule Policy Matrix (7 Cols) */}
+                  <div className="lg:col-span-7 space-y-6">
+                    <PolicyMatrix
+                      rules={investigationData.rules}
+                      summary={investigationData.rules_summary}
+                    />
+                  </div>
+
+                  {/* Right Column: ML Risk, Cross-Check & AI Narrative (5 Cols) */}
+                  <div className="lg:col-span-5 space-y-6">
+                    <MLRiskCard ml={investigationData.ml} />
+                    <CrossCheckDrawer crossCheck={investigationData.cross_check} />
+                    <ExplanationPanel
+                      explanation={investigationData.explanation}
+                      checklist={investigationData.checklist}
+                      dataGaps={investigationData.data_gaps}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeTab === "rules" && (
+              <div className="w-full">
                 <PolicyMatrix
                   rules={investigationData.rules}
                   summary={investigationData.rules_summary}
                 />
               </div>
+            )}
 
-              {/* Right Column: ML Risk, Cross-Check & AI Narrative (5 Cols) */}
-              <div className="lg:col-span-5 space-y-6">
-                <MLRiskCard ml={investigationData.ml} />
-                <CrossCheckDrawer crossCheck={investigationData.cross_check} />
-                <ExplanationPanel
-                  explanation={investigationData.explanation}
-                  checklist={investigationData.checklist}
-                  dataGaps={investigationData.data_gaps}
+            {activeTab === "forensics" && (
+              <div className="w-full">
+                <FinancialForensics
+                  applicant={investigationData.applicant}
+                  transactions={investigationData.transactions}
                 />
               </div>
-            </div>
+            )}
+
+            {activeTab === "ml" && (
+              <div className="space-y-6">
+                <MLRiskCard ml={investigationData.ml} />
+                <CrossCheckDrawer crossCheck={investigationData.cross_check} />
+              </div>
+            )}
           </div>
         )}
       </main>
@@ -254,7 +303,10 @@ export const App: React.FC = () => {
       {investigationData && (
         <ReportViewModal
           isOpen={isReportOpen}
-          onClose={() => setIsReportOpen(false)}
+          onClose={() => {
+            setIsReportOpen(false);
+            setActiveTab((prev) => (prev === "memo" ? "overview" : prev));
+          }}
           data={investigationData}
         />
       )}

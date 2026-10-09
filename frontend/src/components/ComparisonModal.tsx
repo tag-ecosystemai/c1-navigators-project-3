@@ -48,17 +48,17 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="relative flex max-h-[90vh] w-full max-w-6xl flex-col rounded-2xl border border-slate-700 bg-[#0c1828] shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-labelledby="comparison-modal-title">
+      <div className="relative flex max-h-[90vh] w-full max-w-6xl flex-col rounded-2xl border border-line-muted bg-surface-secondary shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 p-5">
+        <div className="flex items-center justify-between border-b border-line-subtle p-5">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500/20 text-brand-400">
               <Scale className="h-5 w-5" />
             </div>
             <div>
               <h2 className="text-lg font-bold text-white">Side-by-Side Persona Comparison</h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-content-muted">
                 Compare lending outcomes, risk scores, and policy drivers across all 5 test cases
               </p>
             </div>
@@ -66,7 +66,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
           <button
             onClick={onClose}
-            className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+            className="rounded-lg p-2 text-content-muted hover:bg-slate-800 hover:text-white transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -75,7 +75,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
         {/* Content */}
         <div className="flex-1 overflow-auto p-5">
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-20 text-slate-400 gap-3">
+            <div className="flex flex-col items-center justify-center py-20 text-content-muted gap-3">
               <Loader2 className="h-8 w-8 animate-spin text-brand-400" />
               <p className="text-sm">Running side-by-side policy & ML evaluations...</p>
             </div>
@@ -92,11 +92,11 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                 return (
                   <div
                     key={persona.id}
-                    className="flex flex-col justify-between rounded-xl border border-slate-800 bg-[#112238]/70 p-4 text-xs space-y-4"
+                    className="flex flex-col justify-between rounded-xl border border-line-subtle bg-surface-elevated/70 p-4 text-xs space-y-4"
                   >
                     {/* Top Identity */}
                     <div>
-                      <span className="font-mono text-[10px] text-slate-400 block">{persona.id}</span>
+                      <span className="font-mono text-[10px] text-content-muted block">{persona.id}</span>
                       <h3 className="font-bold text-sm text-white">{persona.name}</h3>
 
                       {/* Verdict Badge */}
@@ -119,37 +119,37 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                     </div>
 
                     {/* Primary Driver */}
-                    <div className="border-t border-slate-800/80 pt-3">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                    <div className="border-t border-line-subtle/80 pt-3">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-content-muted block">
                         Primary Driver
                       </span>
-                      <p className="mt-1 font-semibold text-slate-200">
+                      <p className="mt-1 font-semibold text-content-secondary">
                         {data.verdict.driver ? `${data.verdict.driver.code}: ${data.verdict.driver.name}` : "All checks passed"}
                       </p>
                     </div>
 
                     {/* Key Metrics Table */}
-                    <div className="space-y-2 border-t border-slate-800/80 pt-3 text-[11px]">
+                    <div className="space-y-2 border-t border-line-subtle/80 pt-3 text-[11px]">
                       <div className="flex justify-between">
-                        <span className="text-slate-400">ML Default Prob:</span>
-                        <strong className="font-mono text-slate-200">
+                        <span className="text-content-muted">ML Default Prob:</span>
+                        <strong className="font-mono text-content-secondary">
                           {data.ml.available ? `${(data.ml.score * 100).toFixed(1)}%` : "N/A"}
                         </strong>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400">Requested:</span>
-                        <span className="font-semibold text-slate-200">{data.applicant.requested_amount}</span>
+                        <span className="text-content-muted">Requested:</span>
+                        <span className="font-semibold text-content-secondary">{data.applicant.requested_amount}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400">Credit Score:</span>
-                        <span className="font-mono font-semibold text-slate-200">{data.applicant.credit_score}</span>
+                        <span className="text-content-muted">Credit Score:</span>
+                        <span className="font-mono font-semibold text-content-secondary">{data.applicant.credit_score}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400">Policy Failures:</span>
+                        <span className="text-content-muted">Policy Failures:</span>
                         <span className="font-semibold text-rose-400">{data.rules_summary.fail}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400">Policy Reviews:</span>
+                        <span className="text-content-muted">Policy Reviews:</span>
                         <span className="font-semibold text-amber-400">{data.rules_summary.review}</span>
                       </div>
                     </div>
@@ -160,7 +160,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                         onSelectPersona(persona.id);
                         onClose();
                       }}
-                      className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 py-2 text-xs font-semibold text-white hover:bg-brand-600 transition-colors"
+                      className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-line-muted bg-slate-800 py-2 text-xs font-semibold text-white hover:bg-brand-600 transition-colors"
                     >
                       <span>Investigate</span>
                       <ArrowRight className="h-3.5 w-3.5" />

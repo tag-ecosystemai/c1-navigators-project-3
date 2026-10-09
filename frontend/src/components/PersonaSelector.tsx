@@ -20,12 +20,12 @@ export const PersonaSelector: React.FC<PersonaSelectorProps> = ({
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <User className="h-4 w-4 text-brand-400" />
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
             Select Test Persona (Golden Cases)
           </span>
         </div>
-        <span className="text-[11px] text-slate-400">
-          Keyboard: Press keys <kbd className="rounded bg-slate-800 px-1 py-0.5 font-mono text-slate-300">1</kbd> to <kbd className="rounded bg-slate-800 px-1 py-0.5 font-mono text-slate-300">5</kbd>
+        <span className="text-[11px] text-content-muted">
+          Keyboard: Press keys <kbd className="rounded bg-slate-800 px-1 py-0.5 font-mono text-content-muted">1</kbd> to <kbd className="rounded bg-slate-800 px-1 py-0.5 font-mono text-content-muted">5</kbd>
         </span>
       </div>
 
@@ -35,7 +35,7 @@ export const PersonaSelector: React.FC<PersonaSelectorProps> = ({
           const shortcutKey = index + 1;
 
           // Badges for expected test profiles
-          let badgeColor = "border-slate-700 bg-slate-800/80 text-slate-300";
+          let badgeColor = "border-line-muted bg-slate-800/80 text-content-muted";
           let badgeIcon = <CheckCircle2 className="h-3 w-3 text-emerald-400" />;
           let outcomeTag = "Prime";
 
@@ -65,21 +65,21 @@ export const PersonaSelector: React.FC<PersonaSelectorProps> = ({
               className={`group relative flex flex-col justify-between rounded-xl border p-3.5 text-left transition-all duration-200 ${
                 isSelected
                   ? "border-brand-500 bg-brand-950/40 shadow-lg shadow-brand-950/40 ring-1 ring-brand-500"
-                  : "border-slate-800 bg-[#0c1828]/80 hover:border-slate-700 hover:bg-[#112238]/90"
+                  : "border-line-subtle bg-surface-secondary/80 hover:border-line-muted hover:bg-surface-elevated/90"
               }`}
             >
               {/* Header */}
               <div className="flex items-start justify-between w-full gap-2">
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-md bg-slate-800 font-mono text-[11px] font-bold text-slate-300 group-hover:bg-brand-600 group-hover:text-white transition-colors">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-md bg-slate-800 font-mono text-[11px] font-bold text-content-muted group-hover:bg-brand-600 group-hover:text-white transition-colors">
                       {shortcutKey}
                     </span>
-                    <h3 className="font-semibold text-sm text-slate-100 group-hover:text-brand-300 transition-colors">
+                    <h3 className="font-semibold text-sm text-content-primary group-hover:text-brand-300 transition-colors">
                       {persona.name}
                     </h3>
                   </div>
-                  <span className="text-[11px] font-mono text-slate-400">
+                  <span className="text-[11px] font-mono text-content-muted">
                     {persona.id}
                   </span>
                 </div>
@@ -91,18 +91,18 @@ export const PersonaSelector: React.FC<PersonaSelectorProps> = ({
               </div>
 
               {/* Tagline */}
-              <p className="mt-2 text-xs text-slate-400 line-clamp-2 leading-relaxed">
+              <p className="mt-2 text-xs text-content-muted line-clamp-2 leading-relaxed">
                 {persona.tagline}
               </p>
 
               {/* Financial Headline */}
-              <div className="mt-3 flex items-center justify-between border-t border-slate-800/80 pt-2 text-xs">
+              <div className="mt-3 flex items-center justify-between border-t border-line-subtle/80 pt-2 text-xs">
                 <div>
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Requested</span>
-                  <span className="font-semibold text-slate-200">{persona.headline.loan_amount}</span>
+                  <span className="text-[10px] text-content-muted uppercase tracking-wider block">Requested</span>
+                  <span className="font-semibold text-content-secondary">{persona.headline.loan_amount}</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Score</span>
+                  <span className="text-[10px] text-content-muted uppercase tracking-wider block">Score</span>
                   <span className={`font-mono font-semibold ${persona.headline.credit_score >= 680 ? "text-emerald-400" : persona.headline.credit_score >= 600 ? "text-amber-400" : "text-rose-400"}`}>
                     {persona.headline.credit_score}
                   </span>

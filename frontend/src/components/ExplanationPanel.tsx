@@ -24,11 +24,11 @@ export const ExplanationPanel: React.FC<ExplanationPanelProps> = ({
   return (
     <div className="space-y-5">
       {/* AI Explanation Narrative */}
-      <div className="rounded-2xl border border-slate-800 bg-[#0c1828]/90 p-5 shadow-sm">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div className="rounded-2xl border border-line-subtle bg-surface-secondary/90 p-5 shadow-sm">
+        <div className="flex items-center justify-between border-b border-line-subtle pb-3">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-brand-400" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-content-secondary">
               Investigation Narrative & Risk Assessment
             </h3>
           </div>
@@ -36,28 +36,28 @@ export const ExplanationPanel: React.FC<ExplanationPanelProps> = ({
             className={`rounded-full border px-2.5 py-0.5 text-[11px] font-medium ${
               isAzure
                 ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
-                : "border-slate-700 bg-slate-800 text-slate-300"
+                : "border-line-muted bg-slate-800 text-content-muted"
             }`}
           >
             {explanation.label}
           </span>
         </div>
 
-        <div className="mt-4 prose prose-invert max-w-none text-xs text-slate-300 leading-relaxed whitespace-pre-line">
+        <div className="mt-4 prose prose-invert max-w-none text-xs text-content-muted leading-relaxed whitespace-pre-line">
           {explanation.text}
         </div>
       </div>
 
       {/* Credit Analyst Action Checklist */}
-      <div className="rounded-2xl border border-slate-800 bg-[#0c1828]/90 p-5 shadow-sm">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div className="rounded-2xl border border-line-subtle bg-surface-secondary/90 p-5 shadow-sm">
+        <div className="flex items-center justify-between border-b border-line-subtle pb-3">
           <div className="flex items-center gap-2">
             <CheckSquare className="h-4 w-4 text-brand-400" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-content-secondary">
               Analyst Action Checklist & Verification
             </h3>
           </div>
-          <span className="text-[11px] text-slate-400">
+          <span className="text-[11px] text-content-muted">
             {Object.values(checkedItems).filter(Boolean).length}/{initialChecklist.length} Completed
           </span>
         </div>
@@ -70,16 +70,21 @@ export const ExplanationPanel: React.FC<ExplanationPanelProps> = ({
                 ? "border-rose-500/30 bg-rose-500/10 text-rose-300"
                 : item.priority === "medium"
                 ? "border-amber-500/30 bg-amber-500/10 text-amber-300"
-                : "border-slate-700 bg-slate-800 text-slate-400";
+                : "border-line-muted bg-slate-800 text-content-muted";
 
             return (
               <div
                 key={item.id || idx}
                 onClick={() => toggleCheck(item.id || `check-${idx}`)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCheck(item.id || `check-${idx}`); } }}
+                role="checkbox"
+                tabIndex={0}
+                aria-checked={isDone}
+                aria-label={item.text}
                 className={`flex items-start gap-3 rounded-xl border p-3 text-xs cursor-pointer transition-all ${
                   isDone
-                    ? "border-emerald-500/30 bg-emerald-950/10 text-slate-400 opacity-70"
-                    : "border-slate-800/80 bg-[#112238]/60 hover:border-slate-700"
+                    ? "border-emerald-500/30 bg-emerald-950/10 text-content-muted opacity-70"
+                    : "border-line-subtle/80 bg-surface-elevated/60 hover:border-line-muted"
                 }`}
               >
                 <button className="mt-0.5 text-brand-400 focus:outline-none">
@@ -91,7 +96,7 @@ export const ExplanationPanel: React.FC<ExplanationPanelProps> = ({
                 </button>
 
                 <div className="flex-1">
-                  <p className={`leading-relaxed ${isDone ? "line-through text-slate-400" : "text-slate-200"}`}>
+                  <p className={`leading-relaxed ${isDone ? "line-through text-content-muted" : "text-content-secondary"}`}>
                     {item.text}
                   </p>
                 </div>

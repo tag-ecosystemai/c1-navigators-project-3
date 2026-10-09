@@ -31,10 +31,10 @@ export const VerdictHero: React.FC<VerdictHeroProps> = ({
     <div
       className={`relative overflow-hidden rounded-2xl border p-6 shadow-xl transition-all ${
         isApproved
-          ? "border-emerald-500/40 bg-gradient-to-br from-[#0c2419]/90 via-[#0c1828]/95 to-[#07111f] shadow-emerald-950/30"
+          ? "border-emerald-500/40 bg-gradient-to-br from-emerald-950/30 via-surface-secondary to-surface-primary shadow-emerald-950/30"
           : isReview
-          ? "border-amber-500/40 bg-gradient-to-br from-[#2a1d08]/90 via-[#0c1828]/95 to-[#07111f] shadow-amber-950/30"
-          : "border-rose-500/40 bg-gradient-to-br from-[#280c13]/90 via-[#0c1828]/95 to-[#07111f] shadow-rose-950/30"
+          ? "border-amber-500/40 bg-gradient-to-br from-amber-950/30 via-surface-secondary to-surface-primary shadow-amber-950/30"
+          : "border-rose-500/40 bg-gradient-to-br from-rose-950/30 via-surface-secondary to-surface-primary shadow-rose-950/30"
       }`}
     >
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
@@ -56,17 +56,17 @@ export const VerdictHero: React.FC<VerdictHeroProps> = ({
               {verdict.label}
             </span>
 
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800/80 px-3 py-1 text-xs text-slate-300">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-line-muted bg-surface-elevated px-3 py-1 text-xs text-content-muted">
               <UserCheck className="h-3.5 w-3.5 text-brand-400" />
               <span>{verdict.note}</span>
             </span>
           </div>
 
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+            <h1 className="text-2xl font-bold tracking-tight text-content-primary sm:text-3xl">
               {applicant.name}
             </h1>
-            <p className="mt-1 text-sm text-slate-300 leading-relaxed">
+            <p className="mt-1 text-sm text-content-muted leading-relaxed">
               {verdict.reason}
             </p>
           </div>
@@ -112,30 +112,30 @@ export const VerdictHero: React.FC<VerdictHeroProps> = ({
 
         {/* Right Side: Quick Action & Financial Snapshot */}
         <div className="flex flex-col gap-4 lg:w-80 shrink-0">
-          <div className="rounded-xl border border-slate-800 bg-[#07111f]/80 p-4">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-3">
+          <div className="rounded-xl border border-line-subtle bg-surface-primary/80 p-4">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-content-muted block mb-3">
               Applicant Profile & Facility
             </span>
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div>
-                <span className="text-slate-400 block text-[10px]">Requested Facility</span>
-                <strong className="text-white text-sm font-semibold">{applicant.requested_amount}</strong>
-                <span className="text-slate-400 block text-[10px]">{applicant.loan_tenure_months} mo. tenure</span>
+                <span className="text-content-muted block text-[10px]">Requested Facility</span>
+                <strong className="text-content-primary text-sm font-semibold">{applicant.requested_amount}</strong>
+                <span className="text-content-muted block text-[10px]">{applicant.loan_tenure_months} mo. tenure</span>
               </div>
               <div>
-                <span className="text-slate-400 block text-[10px]">Credit Bureau Score</span>
+                <span className="text-content-muted block text-[10px]">Credit Bureau Score</span>
                 <strong className={`text-sm font-bold font-mono ${applicant.credit_score >= 680 ? "text-emerald-400" : applicant.credit_score >= 600 ? "text-amber-400" : "text-rose-400"}`}>
                   {applicant.credit_score}
                 </strong>
-                <span className="text-slate-400 block text-[10px]">{applicant.purpose}</span>
+                <span className="text-content-muted block text-[10px]">{applicant.purpose}</span>
               </div>
-              <div className="border-t border-slate-800 pt-2">
-                <span className="text-slate-400 block text-[10px]">Stated Income</span>
-                <span className="text-slate-200 font-semibold">{applicant.monthly_income}</span>
+              <div className="border-t border-line-subtle pt-2">
+                <span className="text-content-muted block text-[10px]">Stated Income</span>
+                <span className="text-content-secondary font-semibold">{applicant.monthly_income}</span>
               </div>
-              <div className="border-t border-slate-800 pt-2">
-                <span className="text-slate-400 block text-[10px]">Living Expenses</span>
-                <span className="text-slate-200 font-semibold">{applicant.monthly_expenses}</span>
+              <div className="border-t border-line-subtle pt-2">
+                <span className="text-content-muted block text-[10px]">Living Expenses</span>
+                <span className="text-content-secondary font-semibold">{applicant.monthly_expenses}</span>
               </div>
             </div>
           </div>

@@ -36,7 +36,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const isAzure = health?.mode === "azure";
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-800 bg-[#07111f]/95 backdrop-blur-md dark:border-slate-800 dark:bg-[#07111f]/95 light:bg-white/95 light:border-slate-200">
+    <header className="sticky top-0 z-40 w-full border-b border-line-subtle bg-surface-primary/95 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand */}
         <div className="flex items-center gap-3">
@@ -45,21 +45,21 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-lg font-bold tracking-tight text-white light:text-slate-900">
+              <span className="text-lg font-bold tracking-tight text-content-primary">
                 CREDENCE
               </span>
               <span className="rounded bg-brand-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-brand-400 border border-brand-500/20">
                 AI CREDIT AGENT
               </span>
             </div>
-            <p className="text-xs text-slate-400">Decision-Support Workstation</p>
+            <p className="text-xs text-content-muted">Decision-Support Workstation</p>
           </div>
         </div>
 
         {/* Status Mode Banner */}
         <div className="hidden md:flex items-center gap-3">
           {healthLoading ? (
-            <div className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-800/60 px-3 py-1 text-xs text-slate-300">
+            <div className="flex items-center gap-2 rounded-full border border-line-muted bg-slate-800/60 px-3 py-1 text-xs text-content-muted">
               <Activity className="h-3.5 w-3.5 animate-spin text-brand-400" />
               <span>Checking AI services...</span>
             </div>
@@ -103,28 +103,28 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={onOpenCompare}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-3 py-1.5 text-xs font-medium text-slate-200 transition-colors hover:bg-slate-700 hover:text-white"
+            className="flex items-center gap-1.5 rounded-lg border border-line-muted bg-slate-800/80 px-3 py-1.5 text-xs font-medium text-content-secondary transition-colors hover:bg-slate-700 hover:text-white"
             title="Side-by-side Persona Comparison (Shortcut: C)"
           >
             <Scale className="h-3.5 w-3.5 text-brand-400" />
             <span className="hidden sm:inline">Compare</span>
-            <kbd className="ml-1 rounded bg-slate-700/80 px-1 py-0.5 text-[10px] text-slate-300">C</kbd>
+            <kbd className="ml-1 rounded bg-slate-700/80 px-1 py-0.5 text-[10px] text-content-muted">C</kbd>
           </button>
 
           <button
             onClick={onRefresh}
             disabled={isInvestigating}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-3 py-1.5 text-xs font-medium text-slate-200 transition-colors hover:bg-slate-700 hover:text-white disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-lg border border-line-muted bg-slate-800/80 px-3 py-1.5 text-xs font-medium text-content-secondary transition-colors hover:bg-slate-700 hover:text-white disabled:opacity-50"
             title="Re-run Investigation (Shortcut: R)"
           >
-            <RotateCw className={`h-3.5 w-3.5 text-slate-400 ${isInvestigating ? "animate-spin text-brand-400" : ""}`} />
+            <RotateCw className={`h-3.5 w-3.5 text-content-muted ${isInvestigating ? "animate-spin text-brand-400" : ""}`} />
             <span className="hidden sm:inline">Re-run</span>
-            <kbd className="ml-1 rounded bg-slate-700/80 px-1 py-0.5 text-[10px] text-slate-300">R</kbd>
+            <kbd className="ml-1 rounded bg-slate-700/80 px-1 py-0.5 text-[10px] text-content-muted">R</kbd>
           </button>
 
           <button
             onClick={onToggleTheme}
-            className="rounded-lg border border-slate-700 bg-slate-800/80 p-2 text-slate-300 transition-colors hover:bg-slate-700 hover:text-white"
+            className="rounded-lg border border-line-muted bg-slate-800/80 p-2 text-content-muted transition-colors hover:bg-slate-700 hover:text-white"
             title={`Toggle ${theme === "dark" ? "Light" : "Dark"} Mode (Shortcut: T)`}
             aria-label="Toggle theme"
           >
@@ -133,7 +133,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <button
             onClick={onOpenShortcuts}
-            className="rounded-lg border border-slate-700 bg-slate-800/80 p-2 text-slate-300 transition-colors hover:bg-slate-700 hover:text-white"
+            className="rounded-lg border border-line-muted bg-slate-800/80 p-2 text-content-muted transition-colors hover:bg-slate-700 hover:text-white"
             title="Keyboard Shortcuts (Shortcut: ?)"
             aria-label="Keyboard shortcuts"
           >

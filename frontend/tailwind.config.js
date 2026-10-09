@@ -8,6 +8,24 @@ export default {
   theme: {
     extend: {
       colors: {
+        surface: {
+          primary: "var(--bg-primary)",
+          secondary: "var(--bg-secondary)",
+          card: "var(--bg-card)",
+          "card-hover": "var(--bg-card-hover)",
+          elevated: "var(--bg-elevated)",
+          input: "var(--bg-input)",
+        },
+        content: {
+          primary: "var(--text-primary)",
+          secondary: "var(--text-secondary)",
+          muted: "var(--text-muted)",
+        },
+        line: {
+          subtle: "var(--border-subtle)",
+          muted: "var(--border-muted)",
+          card: "var(--border-card)",
+        },
         brand: {
           50: "#f0f7ff",
           100: "#e0effe",

@@ -95,7 +95,7 @@ export const PolicyMatrix: React.FC<PolicyMatrixProps> = ({ rules, summary }) =>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 rounded-full border border-slate-700 bg-slate-800 px-2.5 py-0.5 text-xs font-semibold text-slate-400">
+          <span className="inline-flex items-center gap-1 rounded-full border border-line-muted bg-slate-800 px-2.5 py-0.5 text-xs font-semibold text-content-muted">
             <HelpCircle className="h-3 w-3" /> MISSING
           </span>
         );
@@ -103,17 +103,17 @@ export const PolicyMatrix: React.FC<PolicyMatrixProps> = ({ rules, summary }) =>
   };
 
   return (
-    <div id="policy-matrix-section" className="rounded-2xl border border-slate-800 bg-[#0c1828]/90 p-5 shadow-sm">
+    <div id="policy-matrix-section" className="rounded-2xl border border-line-subtle bg-surface-secondary/90 p-5 shadow-sm">
       {/* Header with Title & Counters */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-slate-800 pb-4">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-line-subtle pb-4">
         <div>
           <div className="flex items-center gap-2">
             <BookOpen className="h-4 w-4 text-brand-400" />
-            <h2 className="text-base font-bold text-slate-100">
+            <h2 className="text-base font-bold text-content-primary">
               14-Rule Policy Evaluation Matrix
             </h2>
           </div>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-content-muted mt-0.5">
             Deterministic rule evaluation based on underwriting referral and exception policies
           </p>
         </div>
@@ -125,7 +125,7 @@ export const PolicyMatrix: React.FC<PolicyMatrixProps> = ({ rules, summary }) =>
             className={`rounded-lg px-3 py-1.5 font-medium transition-all ${
               activeFilter === "all"
                 ? "bg-slate-700 text-white"
-                : "bg-slate-800/80 text-slate-400 hover:bg-slate-700/60"
+                : "bg-slate-800/80 text-content-muted hover:bg-slate-700/60"
             }`}
           >
             All ({rules.length})
@@ -169,23 +169,23 @@ export const PolicyMatrix: React.FC<PolicyMatrixProps> = ({ rules, summary }) =>
       {/* Filter and Search Bar */}
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-content-muted" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search rule code, name, or citation..."
-            className="w-full rounded-lg border border-slate-700 bg-slate-900/80 py-1.5 pl-8 pr-3 text-xs text-slate-200 placeholder-slate-500 focus:border-brand-500 focus:outline-none"
+            className="w-full rounded-lg border border-line-muted bg-slate-900/80 py-1.5 pl-8 pr-3 text-xs text-content-secondary placeholder-slate-500 focus:border-brand-500 focus:outline-none"
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-900/80 px-2 py-1 text-xs text-slate-300">
-            <Filter className="h-3 w-3 text-slate-400" />
+          <div className="flex items-center gap-1.5 rounded-lg border border-line-muted bg-slate-900/80 px-2 py-1 text-xs text-content-muted">
+            <Filter className="h-3 w-3 text-content-muted" />
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="bg-transparent text-xs text-slate-200 focus:outline-none cursor-pointer"
+              className="bg-transparent text-xs text-content-secondary focus:outline-none cursor-pointer"
             >
               <option value="all" className="bg-slate-900">All Categories</option>
               <option value="Eligibility" className="bg-slate-900">Eligibility</option>
@@ -197,7 +197,7 @@ export const PolicyMatrix: React.FC<PolicyMatrixProps> = ({ rules, summary }) =>
 
           <button
             onClick={Object.keys(expandedRules).length > 0 ? collapseAll : expandAll}
-            className="rounded-lg border border-slate-700 bg-slate-900/80 px-2.5 py-1 text-xs font-medium text-slate-300 hover:bg-slate-800 transition-colors"
+            className="rounded-lg border border-line-muted bg-slate-900/80 px-2.5 py-1 text-xs font-medium text-content-muted hover:bg-slate-800 transition-colors"
           >
             {Object.keys(expandedRules).length > 0 ? "Collapse All" : "Expand All"}
           </button>
@@ -207,7 +207,7 @@ export const PolicyMatrix: React.FC<PolicyMatrixProps> = ({ rules, summary }) =>
       {/* Rules Table / Cards */}
       <div className="mt-4 space-y-2.5">
         {filteredRules.length === 0 ? (
-          <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-8 text-center text-xs text-slate-400">
+          <div className="rounded-xl border border-line-subtle bg-slate-900/40 p-8 text-center text-xs text-content-muted">
             No policy checks match your current filter or search criteria.
           </div>
         ) : (
@@ -223,19 +223,24 @@ export const PolicyMatrix: React.FC<PolicyMatrixProps> = ({ rules, summary }) =>
                     ? rule.outcome === "fail"
                       ? "border-rose-500/50 bg-[#1a0f18]/90 ring-1 ring-rose-500/30"
                       : "border-amber-500/50 bg-[#1a160d]/90 ring-1 ring-amber-500/30"
-                    : "border-slate-800/80 bg-[#112238]/50 hover:border-slate-700/80 hover:bg-[#112238]/80"
+                    : "border-line-subtle/80 bg-surface-elevated/50 hover:border-line-muted/80 hover:bg-surface-elevated/80"
                 }`}
               >
                 {/* Main Row */}
                 <div
                   onClick={() => toggleExpand(rule.code)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleExpand(rule.code); } }}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={isExpanded}
+                  aria-label={`${rule.code} ${rule.name}: ${rule.outcome}`}
                   className="flex flex-col gap-3 p-3.5 sm:flex-row sm:items-center sm:justify-between cursor-pointer select-none"
                 >
                   <div className="flex items-start sm:items-center gap-3">
                     <div className="mt-0.5 sm:mt-0">{getOutcomeBadge(rule.outcome, isDriver)}</div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-bold text-slate-300">
+                        <span className="font-mono text-xs font-bold text-content-muted">
                           {rule.code}
                         </span>
                         <h4 className="text-xs font-semibold text-white">
@@ -247,22 +252,22 @@ export const PolicyMatrix: React.FC<PolicyMatrixProps> = ({ rules, summary }) =>
                           </span>
                         )}
                       </div>
-                      <p className="mt-0.5 text-xs text-slate-300">{rule.reason}</p>
+                      <p className="mt-0.5 text-xs text-content-muted">{rule.reason}</p>
                     </div>
                   </div>
 
                   {/* Quantitative Actual vs Threshold */}
                   <div className="flex items-center justify-between sm:justify-end gap-4 text-xs">
                     <div className="text-right">
-                      <div className="text-[10px] text-slate-400">Actual Value</div>
-                      <div className="font-mono font-bold text-slate-100">{rule.actual}</div>
+                      <div className="text-[10px] text-content-muted">Actual Value</div>
+                      <div className="font-mono font-bold text-content-primary">{rule.actual}</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-[10px] text-slate-400">Policy Limit</div>
-                      <div className="font-mono text-slate-300">{rule.threshold}</div>
+                      <div className="text-[10px] text-content-muted">Policy Limit</div>
+                      <div className="font-mono text-content-muted">{rule.threshold}</div>
                     </div>
 
-                    <div className="text-slate-400 pl-2">
+                    <div className="text-content-muted pl-2">
                       {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                     </div>
                   </div>
@@ -270,9 +275,9 @@ export const PolicyMatrix: React.FC<PolicyMatrixProps> = ({ rules, summary }) =>
 
                 {/* Expanded Policy Citation & Excerpt */}
                 {isExpanded && (
-                  <div className="border-t border-slate-800/80 bg-slate-950/60 p-4 rounded-b-xl space-y-3 text-xs">
+                  <div className="border-t border-line-subtle/80 bg-slate-950/60 p-4 rounded-b-xl space-y-3 text-xs">
                     <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-content-muted block mb-1">
                         Policy Document Citation
                       </span>
                       <div className="font-mono text-[11px] text-brand-300 bg-brand-950/30 border border-brand-500/20 rounded p-2">
@@ -281,11 +286,11 @@ export const PolicyMatrix: React.FC<PolicyMatrixProps> = ({ rules, summary }) =>
                     </div>
 
                     <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-content-muted block mb-1">
                         Policy Excerpt
                       </span>
-                      <blockquote className="border-l-2 border-slate-600 pl-3 py-1 text-slate-300 italic text-[11px] leading-relaxed">
-                        "{rule.policy_excerpt}"
+                      <blockquote className="border-l-2 border-slate-600 pl-3 py-1 text-content-muted italic text-xs leading-relaxed">
+                        &ldquo;{rule.policy_excerpt}&rdquo;
                       </blockquote>
                     </div>
                   </div>

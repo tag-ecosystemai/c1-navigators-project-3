@@ -23,15 +23,15 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-md rounded-2xl border border-slate-700 bg-[#0c1828] p-6 shadow-2xl">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+      <div className="relative w-full max-w-md rounded-2xl border border-line-muted bg-surface-secondary p-6 shadow-2xl">
+        <div className="flex items-center justify-between border-b border-line-subtle pb-4">
           <div className="flex items-center gap-2 text-brand-400">
             <Command className="h-5 w-5" />
             <h3 className="text-base font-bold text-white">Keyboard Shortcuts</h3>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white"
+            className="rounded-lg p-1.5 text-content-muted hover:bg-slate-800 hover:text-white"
           >
             <X className="h-4 w-4" />
           </button>
@@ -41,10 +41,10 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
           {shortcuts.map((s) => (
             <div
               key={s.key}
-              className="flex items-center justify-between rounded-lg border border-slate-800/80 bg-slate-900/50 p-2.5 text-xs"
+              className="flex items-center justify-between rounded-lg border border-line-subtle/80 bg-slate-900/50 p-2.5 text-xs"
             >
-              <span className="text-slate-300">{s.description}</span>
-              <kbd className="rounded border border-slate-700 bg-slate-800 px-2 py-1 font-mono font-bold text-brand-300">
+              <span className="text-content-muted">{s.description}</span>
+              <kbd className="rounded border border-line-muted bg-slate-800 px-2 py-1 font-mono font-bold text-brand-300">
                 {s.key}
               </kbd>
             </div>

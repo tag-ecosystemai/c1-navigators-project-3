@@ -9,19 +9,19 @@ interface CrossCheckDrawerProps {
 export const CrossCheckDrawer: React.FC<CrossCheckDrawerProps> = ({ crossCheck }) => {
   if (!crossCheck.available) {
     return (
-      <div className="rounded-2xl border border-slate-800 bg-[#0c1828]/90 p-5">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div className="rounded-2xl border border-line-subtle bg-surface-secondary/90 p-5">
+        <div className="flex items-center justify-between border-b border-line-subtle pb-3">
           <div className="flex items-center gap-2">
             <Scale className="h-4 w-4 text-brand-400" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-content-secondary">
               Policy RAG Cross-Check
             </h3>
           </div>
-          <span className="rounded-full border border-slate-700 bg-slate-800 px-2 py-0.5 text-[10px] text-slate-400">
+          <span className="rounded-full border border-line-muted bg-slate-800 px-2 py-0.5 text-[10px] text-content-muted">
             Offline Mode
           </span>
         </div>
-        <p className="mt-3 text-xs text-slate-400">
+        <p className="mt-3 text-xs text-content-muted">
           Azure OpenAI cross-check is skipped in offline mode. The investigation relies directly on the deterministic policy evaluator.
         </p>
       </div>
@@ -31,11 +31,11 @@ export const CrossCheckDrawer: React.FC<CrossCheckDrawerProps> = ({ crossCheck }
   const hasConflicts = crossCheck.conflicts && crossCheck.conflicts.length > 0;
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-[#0c1828]/90 p-5 shadow-sm">
-      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+    <div className="rounded-2xl border border-line-subtle bg-surface-secondary/90 p-5 shadow-sm">
+      <div className="flex items-center justify-between border-b border-line-subtle pb-3">
         <div className="flex items-center gap-2">
           <Scale className="h-4 w-4 text-brand-400" />
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-content-secondary">
             Policy Checker vs Rule Evaluator
           </h3>
         </div>
@@ -72,16 +72,16 @@ export const CrossCheckDrawer: React.FC<CrossCheckDrawerProps> = ({ crossCheck }
               {crossCheck.conflicts.map((conflict, idx) => (
                 <div
                   key={conflict.rule || idx}
-                  className="rounded-lg border border-slate-800 bg-slate-900/60 p-2.5 text-xs space-y-1.5"
+                  className="rounded-lg border border-line-subtle bg-slate-900/60 p-2.5 text-xs space-y-1.5"
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-mono font-bold text-brand-300">{conflict.rule}</span>
                     <div className="flex items-center gap-2 text-[10px]">
-                      <span className="text-slate-400">Engine: <strong className="text-slate-200">{conflict.evaluator}</strong></span>
-                      <span className="text-slate-400">RAG: <strong className="text-amber-300">{conflict.rag}</strong></span>
+                      <span className="text-content-muted">Engine: <strong className="text-content-secondary">{conflict.evaluator}</strong></span>
+                      <span className="text-content-muted">RAG: <strong className="text-amber-300">{conflict.rag}</strong></span>
                     </div>
                   </div>
-                  <p className="text-[11px] text-slate-300 italic">{conflict.notes}</p>
+                  <p className="text-[11px] text-content-muted italic">{conflict.notes}</p>
                 </div>
               ))}
             </div>

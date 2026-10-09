@@ -53,18 +53,18 @@ export const AgentPipelineStepper: React.FC<AgentPipelineStepperProps> = ({
   };
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-[#0c1828]/90 p-4 shadow-sm">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+    <div className="rounded-xl border border-line-subtle bg-surface-secondary/90 p-4 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-line-subtle pb-3">
         <div className="flex items-center gap-2">
           <div className="h-2 w-2 rounded-full bg-brand-400 animate-pulse" />
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-content-muted">
             Multi-Agent Orchestration Pipeline
           </h2>
         </div>
 
-        <div className="flex items-center gap-3 text-xs text-slate-400">
+        <div className="flex items-center gap-3 text-xs text-content-muted">
           <div className="flex items-center gap-1.5">
-            <Clock className="h-3.5 w-3.5 text-slate-400" />
+            <Clock className="h-3.5 w-3.5 text-content-muted" />
             <span>
               Total Latency: <strong className="font-mono text-brand-300">{totalMs} ms</strong>
             </span>
@@ -80,7 +80,7 @@ export const AgentPipelineStepper: React.FC<AgentPipelineStepperProps> = ({
           return (
             <div
               key={step.key || idx}
-              className="relative flex flex-col justify-between rounded-lg border border-slate-800 bg-[#112238]/60 p-3 transition-all hover:border-slate-700"
+              className="relative flex flex-col justify-between rounded-lg border border-line-subtle bg-surface-elevated/60 p-3 transition-all hover:border-line-muted"
             >
               <div>
                 <div className="flex items-center justify-between">
@@ -89,10 +89,10 @@ export const AgentPipelineStepper: React.FC<AgentPipelineStepperProps> = ({
                       {getStepIcon(step.key)}
                     </div>
                     <div>
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-content-muted">
                         Agent 0{idx + 1}
                       </span>
-                      <h4 className="text-xs font-semibold text-slate-200">
+                      <h4 className="text-xs font-semibold text-content-secondary">
                         {step.name}
                       </h4>
                     </div>
@@ -110,13 +110,13 @@ export const AgentPipelineStepper: React.FC<AgentPipelineStepperProps> = ({
                   </span>
                 </div>
 
-                <p className="mt-2 text-[11px] text-slate-400 leading-relaxed">
+                <p className="mt-2 text-[11px] text-content-muted leading-relaxed">
                   {getStepDescription(step.key)}
                 </p>
               </div>
 
               {step.summary && (
-                <div className="mt-2.5 rounded bg-slate-900/60 p-1.5 font-mono text-[10px] text-slate-400 truncate">
+                <div className="mt-2.5 rounded bg-slate-900/60 p-1.5 font-mono text-[10px] text-content-muted truncate">
                   {step.summary}
                 </div>
               )}

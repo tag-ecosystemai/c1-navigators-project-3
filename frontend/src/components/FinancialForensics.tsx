@@ -36,11 +36,11 @@ export const FinancialForensics: React.FC<FinancialForensicsProps> = ({
           className={`rounded-2xl border p-4.5 transition-all ${
             hasIncomeVariance
               ? "border-rose-500/40 bg-rose-950/20 text-rose-200"
-              : "border-slate-800 bg-[#0c1828]/90 text-slate-200"
+              : "border-line-subtle bg-surface-secondary/90 text-content-secondary"
           }`}
         >
           <div className="flex items-center justify-between text-xs">
-            <span className="font-semibold uppercase tracking-wider text-slate-400">
+            <span className="font-semibold uppercase tracking-wider text-content-muted">
               Income Verification
             </span>
             {hasIncomeVariance ? (
@@ -58,7 +58,7 @@ export const FinancialForensics: React.FC<FinancialForensicsProps> = ({
             <div className="text-xl font-bold font-mono text-white">
               {applicant.actual_monthly_salary || applicant.monthly_income}
             </div>
-            <span className="text-[11px] text-slate-400 block mt-0.5">
+            <span className="text-[11px] text-content-muted block mt-0.5">
               Verified Monthly Deposits (Stated: {applicant.monthly_income})
             </span>
           </div>
@@ -69,11 +69,11 @@ export const FinancialForensics: React.FC<FinancialForensicsProps> = ({
           className={`rounded-2xl border p-4.5 transition-all ${
             hasUndisclosedDebt
               ? "border-amber-500/40 bg-amber-950/20 text-amber-200"
-              : "border-slate-800 bg-[#0c1828]/90 text-slate-200"
+              : "border-line-subtle bg-surface-secondary/90 text-content-secondary"
           }`}
         >
           <div className="flex items-center justify-between text-xs">
-            <span className="font-semibold uppercase tracking-wider text-slate-400">
+            <span className="font-semibold uppercase tracking-wider text-content-muted">
               Shadow DTI & Hidden Debt
             </span>
             {hasUndisclosedDebt ? (
@@ -91,7 +91,7 @@ export const FinancialForensics: React.FC<FinancialForensicsProps> = ({
             <div className="text-xl font-bold font-mono text-white">
               {applicant.shadow_dti_pct ? `${applicant.shadow_dti_pct.toFixed(1)}%` : `${applicant.calculated_dti_pct || 18.3}%`}
             </div>
-            <span className="text-[11px] text-slate-400 block mt-0.5">
+            <span className="text-[11px] text-content-muted block mt-0.5">
               Effective Shadow DTI (Stated: {applicant.calculated_dti_pct?.toFixed(1) || "18.3"}%)
             </span>
           </div>
@@ -102,11 +102,11 @@ export const FinancialForensics: React.FC<FinancialForensicsProps> = ({
           className={`rounded-2xl border p-4.5 transition-all ${
             hasGambling
               ? "border-rose-500/40 bg-rose-950/20 text-rose-200"
-              : "border-slate-800 bg-[#0c1828]/90 text-slate-200"
+              : "border-line-subtle bg-surface-secondary/90 text-content-secondary"
           }`}
         >
           <div className="flex items-center justify-between text-xs">
-            <span className="font-semibold uppercase tracking-wider text-slate-400">
+            <span className="font-semibold uppercase tracking-wider text-content-muted">
               Gambling & Wagering
             </span>
             {hasGambling ? (
@@ -124,7 +124,7 @@ export const FinancialForensics: React.FC<FinancialForensicsProps> = ({
             <div className="text-xl font-bold font-mono text-white">
               {applicant.gambling_ratio ? `${applicant.gambling_ratio}% of income` : "0.0%"}
             </div>
-            <span className="text-[11px] text-slate-400 block mt-0.5">
+            <span className="text-[11px] text-content-muted block mt-0.5">
               Policy cap: &lt; 3.0% standard (&gt; 10% decline)
             </span>
           </div>
@@ -135,11 +135,11 @@ export const FinancialForensics: React.FC<FinancialForensicsProps> = ({
           className={`rounded-2xl border p-4.5 transition-all ${
             hasNSF
               ? "border-rose-500/40 bg-rose-950/20 text-rose-200"
-              : "border-slate-800 bg-[#0c1828]/90 text-slate-200"
+              : "border-line-subtle bg-surface-secondary/90 text-content-secondary"
           }`}
         >
           <div className="flex items-center justify-between text-xs">
-            <span className="font-semibold uppercase tracking-wider text-slate-400">
+            <span className="font-semibold uppercase tracking-wider text-content-muted">
               Overdraft & NSF Events
             </span>
             {hasNSF ? (
@@ -157,7 +157,7 @@ export const FinancialForensics: React.FC<FinancialForensicsProps> = ({
             <div className="text-xl font-bold font-mono text-white">
               {applicant.nsf_count || 0} Fees
             </div>
-            <span className="text-[11px] text-slate-400 block mt-0.5">
+            <span className="text-[11px] text-content-muted block mt-0.5">
               Policy limit: 0 standard (&gt;= 4 decline knockout)
             </span>
           </div>
@@ -165,23 +165,23 @@ export const FinancialForensics: React.FC<FinancialForensicsProps> = ({
       </div>
 
       {/* Employment & Underwriting Baseline */}
-      <div className="rounded-2xl border border-slate-800 bg-[#0c1828]/90 p-5 shadow-sm">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 border-b border-slate-800 pb-3 mb-4">
+      <div className="rounded-2xl border border-line-subtle bg-surface-secondary/90 p-5 shadow-sm">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-content-muted border-b border-line-subtle pb-3 mb-4">
           Underwriter Verification & Employment Baseline
         </h3>
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 text-xs">
           <div>
-            <div className="flex items-center gap-1.5 text-slate-400 mb-1">
+            <div className="flex items-center gap-1.5 text-content-muted mb-1">
               <Building className="h-3.5 w-3.5 text-brand-400" />
               <span>Employer</span>
             </div>
             <strong className="text-white block">{applicant.employer_name || "Verified Employer"}</strong>
-            <span className="text-[11px] text-slate-400">{applicant.job_title || "Salaried Employee"}</span>
+            <span className="text-[11px] text-content-muted">{applicant.job_title || "Salaried Employee"}</span>
           </div>
 
           <div>
-            <div className="flex items-center gap-1.5 text-slate-400 mb-1">
+            <div className="flex items-center gap-1.5 text-content-muted mb-1">
               <Briefcase className="h-3.5 w-3.5 text-brand-400" />
               <span>Tenure</span>
             </div>
@@ -192,50 +192,50 @@ export const FinancialForensics: React.FC<FinancialForensicsProps> = ({
           </div>
 
           <div>
-            <div className="flex items-center gap-1.5 text-slate-400 mb-1">
+            <div className="flex items-center gap-1.5 text-content-muted mb-1">
               <DollarSign className="h-3.5 w-3.5 text-brand-400" />
               <span>Living Costs</span>
             </div>
             <strong className="text-white block">{applicant.monthly_expenses}</strong>
-            <span className="text-[11px] text-slate-400">{applicant.housing_status || "Standard"} housing</span>
+            <span className="text-[11px] text-content-muted">{applicant.housing_status || "Standard"} housing</span>
           </div>
 
           <div>
-            <div className="flex items-center gap-1.5 text-slate-400 mb-1">
+            <div className="flex items-center gap-1.5 text-content-muted mb-1">
               <TrendingUp className="h-3.5 w-3.5 text-brand-400" />
               <span>Public Records</span>
             </div>
             <strong className={`block ${applicant.bankruptcies_count > 0 ? "text-rose-400" : "text-emerald-400"}`}>
               {applicant.bankruptcies_count > 0 ? `${applicant.bankruptcies_count} Active Bankruptcy` : "0 Bankruptcies / Liens"}
             </strong>
-            <span className="text-[11px] text-slate-400">Bureau public record check</span>
+            <span className="text-[11px] text-content-muted">Bureau public record check</span>
           </div>
         </div>
       </div>
 
       {/* Forensic Bank Statement Transaction Log */}
-      <div className="rounded-2xl border border-slate-800 bg-[#0c1828]/90 p-5 shadow-sm">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+      <div className="rounded-2xl border border-line-subtle bg-surface-secondary/90 p-5 shadow-sm">
+        <div className="flex items-center justify-between border-b border-line-subtle pb-3 mb-4">
           <div className="flex items-center gap-2">
             <Receipt className="h-4 w-4 text-brand-400" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-content-secondary">
               Forensic Transaction Ledger & Red Flag Analysis
             </h3>
           </div>
-          <span className="text-[11px] text-slate-400">
+          <span className="text-[11px] text-content-muted">
             {transactions.length} Sample Transactions Inspected
           </span>
         </div>
 
         {transactions.length === 0 ? (
-          <p className="text-xs text-slate-400 py-6 text-center">
+          <p className="text-xs text-content-muted py-6 text-center">
             No bank statement ledger items available for this applicant.
           </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-slate-800 text-slate-400 font-semibold text-[11px]">
+                <tr className="border-b border-line-subtle text-content-muted font-semibold text-[11px]">
                   <th className="pb-2.5">Date</th>
                   <th className="pb-2.5">Description</th>
                   <th className="pb-2.5">Category</th>
@@ -254,20 +254,20 @@ export const FinancialForensics: React.FC<FinancialForensicsProps> = ({
                         tx.flagged ? "bg-rose-950/20" : ""
                       }`}
                     >
-                      <td className="py-2.5 font-mono text-slate-400 whitespace-nowrap">{tx.date}</td>
-                      <td className="py-2.5 font-medium text-slate-200">{tx.description}</td>
+                      <td className="py-2.5 font-mono text-content-muted whitespace-nowrap">{tx.date}</td>
+                      <td className="py-2.5 font-medium text-content-secondary">{tx.description}</td>
                       <td className="py-2.5">
-                        <span className="rounded bg-slate-800 px-2 py-0.5 text-[10px] font-medium text-slate-300 capitalize">
+                        <span className="rounded bg-slate-800 px-2 py-0.5 text-[10px] font-medium text-content-muted capitalize">
                           {tx.category.replace("_", " ")}
                         </span>
                       </td>
                       <td className="py-2.5 text-right font-mono font-semibold whitespace-nowrap">
-                        <span className={`inline-flex items-center gap-0.5 ${isInflow ? "text-emerald-400" : "text-slate-300"}`}>
-                          {isInflow ? <ArrowDownRight className="h-3 w-3" /> : <ArrowUpRight className="h-3 w-3 text-slate-400" />}
+                        <span className={`inline-flex items-center gap-0.5 ${isInflow ? "text-emerald-400" : "text-content-muted"}`}>
+                          {isInflow ? <ArrowDownRight className="h-3 w-3" /> : <ArrowUpRight className="h-3 w-3 text-content-muted" />}
                           ${tx.amount.toLocaleString()}
                         </span>
                       </td>
-                      <td className="py-2.5 text-right font-mono text-slate-400 whitespace-nowrap">
+                      <td className="py-2.5 text-right font-mono text-content-muted whitespace-nowrap">
                         ${tx.balance.toLocaleString()}
                       </td>
                       <td className="py-2.5 pl-4">
@@ -276,7 +276,7 @@ export const FinancialForensics: React.FC<FinancialForensicsProps> = ({
                             <AlertTriangle className="h-3 w-3" /> {tx.flagReason}
                           </span>
                         ) : (
-                          <span className="text-slate-400 text-[11px]">—</span>
+                          <span className="text-content-muted text-[11px]">—</span>
                         )}
                       </td>
                     </tr>

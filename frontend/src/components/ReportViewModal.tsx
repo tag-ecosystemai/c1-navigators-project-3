@@ -24,7 +24,7 @@ export const ReportViewModal: React.FC<ReportViewModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative my-8 w-full max-w-4xl rounded-2xl border border-slate-700 bg-white text-slate-900 shadow-2xl overflow-hidden print:m-0 print:border-none print:shadow-none">
+      <div className="relative my-8 w-full max-w-4xl rounded-2xl border border-line-muted bg-white text-slate-900 shadow-2xl overflow-hidden print:m-0 print:border-none print:shadow-none">
         {/* Actions Bar (hidden when printing) */}
         <div className="flex items-center justify-between border-b border-slate-200 bg-slate-100 p-4 print:hidden">
           <div className="flex items-center gap-2">
@@ -159,7 +159,7 @@ export const ReportViewModal: React.FC<ReportViewModalProps> = ({
                       </span>
                     </div>
                     <p className="text-slate-600 text-[11px] mt-0.5">{r.reason}</p>
-                    <p className="text-slate-400 text-[10px] mt-0.5 italic">{r.citation}</p>
+                    <p className="text-content-muted text-[10px] mt-0.5 italic">{r.citation}</p>
                   </div>
                 ))}
             </div>
