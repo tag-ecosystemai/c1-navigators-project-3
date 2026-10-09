@@ -85,3 +85,54 @@ that this is why a human reads both.
 | `ask_agent.py` fails | Skip it; show the `CUST-GOLD-002` HTML report and read the cited clause instead. |
 | Wi-Fi down | `--offline` is designed for this. The banner and every HTML page say OFFLINE MODE. |
 | `import sklearn` / DLL blocked error on Windows | `pip install "scikit-learn<1.9.1"`. It only affects the ML probe; everything else runs. |
+
+## Demo app (web UI)
+
+A single-page web app on top of the same engine. It only displays what `investigate()` and the agents return, so
+the verdicts are identical to the console demo. Nothing secret reaches the browser (the page never sees the API
+key or the endpoint).
+
+### Start it
+
+```bash
+python -m demo_app                 # http://127.0.0.1:8000, Azure OpenAI if configured, else offline
+python -m demo_app --offline       # safety net, no Azure at all
+python -m demo_app --port 8080     # another port;  --no-warm skips the pre-run
+```
+
+On start it checks Azure first (a few seconds), prints `Mode: Azure OpenAI live: chat=..., embeddings=...` or
+`Mode: OFFLINE MODE - no Azure`, then pre-runs the five customers in the background (about a minute on Azure).
+The page shows "Warming up. N of 5 customers are ready" until that finishes; after that every click is instant.
+**Start it two minutes before you present.** Open http://127.0.0.1:8000 in Chrome or Edge, full screen (F11).
+
+The header always shows the mode: green **Azure OpenAI live** or amber **Offline mode** (with the reason in a
+banner when Azure was expected). Keys: `1` to `5` run a customer, `C` opens Compare, `T` switches the theme.
+Set `DEMO_AZURE_TIMEOUT` (seconds, default 60) if your Azure resource is slow.
+
+### Demo order (about 3 minutes)
+
+| Time | Do | Say |
+|---|---|---|
+| 0:00 | Point at the badge and the line "Decision support only" | "Four agents on Azure OpenAI. The system recommends, a person decides." |
+| 0:15 | Press `2` (Marcus Vance). Click **Why this verdict?** | "Decline: he declared $7,500 a month but the bank deposits show far less, a 57.3% gap, over the 25% limit. The rule is the driver; the row opens with the policy text." |
+| 1:05 | Press `4` (David O'Connor). Open the cross-check panel | "Review, not decline: $740 a month of hidden loan payments. The policy gives no automatic verdict for that, so a person decides. The policy checker agreed with the rule engine on all 11 rules it compared." |
+| 1:50 | Press `1` (Sarah Jenkins). Look at the cross-check panel | "Eligible. The honest part: on net disposable income the policy checker disagreed with the rule engine, because that rule is a formula with a per-dependent amount. We show it, with the clause, instead of hiding it." |
+| 2:30 | Press `C` | "Side by side: same engine, three outcomes. The ML score is a supporting signal and never changes the verdict." |
+
+Other things to point at: the four agent steps with real timings, the green/amber/red chips (each with an icon and
+text), the explanation source label ("Written by Azure OpenAI" or "Template"), and the analyst checklist.
+
+### If something fails
+
+| Symptom | What to do |
+|---|---|
+| Badge is amber "Offline mode" and a banner gives a reason | The verdict, rules and ML score are unchanged; only the policy checker and the Azure explanation are skipped and labelled. Say so: "Azure is not answering, so this is the offline safety net." Click **Run again** after about 20 seconds to retry Azure. |
+| One customer is slow (over 15 seconds) | It is a cold Azure call; the app falls back by itself after the time limit. Move on and come back. |
+| Banner "Cannot reach the demo server" | The server stopped. Restart `python -m demo_app` (add `--offline` if Azure is the problem). |
+| "address already in use" | Another copy is running: close it, or use `--port 8081`. |
+| Page looks blank or old | Hard refresh with Ctrl+F5. |
+| Text too small on the projector | Browser zoom Ctrl and plus; the layout adapts. |
+| Nothing works | Run `python scripts/demo.py --all --offline` and open the HTML reports in `demo_output/`. |
+
+Limits shown on each rule are the rule engine's own (for example the loan-to-income cap per credit tier), so they
+always match the status next to them.

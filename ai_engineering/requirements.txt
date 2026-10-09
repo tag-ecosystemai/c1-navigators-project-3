@@ -17,6 +17,11 @@ xgboost>=2.0
 scikit-learn>=1.3,<1.9.1
 pandas>=2.0             # scripts/predict_risk.py, scripts/train_risk_model.py
 
+# --- Demo web app (python -m demo_app); httpx is used by the test client
+fastapi>=0.115,<1.0
+uvicorn>=0.30,<1.0
+httpx>=0.27,<1.0
+
 # --- Optional: only when RAG_STORE=azure_search (see docs/AZURE_SETUP.md); tests use a mock
 # azure-search-documents>=11.5
 

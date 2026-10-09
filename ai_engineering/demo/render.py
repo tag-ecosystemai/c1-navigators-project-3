@@ -29,6 +29,25 @@ def retrieve_policy_text(codes: list[str]) -> dict[str, dict]:
     return out
 
 
+# ----------------------------------------------------------------------------- terminal safety
+
+# Windows consoles (cmd, PowerShell, some Git Bash setups) are not reliably UTF-8, so the console report is
+# plain ASCII. The HTML report is UTF-8 and is not passed through this.
+_ASCII = {
+    "\u00a7": "Sec. ", "\u2013": "-", "\u2014": "-", "\u2212": "-", "\u2018": "'", "\u2019": "'", "\u201c": '"',
+    "\u201d": '"', "\u2026": "...", "\u2022": "*", "\u2264": "<=", "\u2265": ">=", "\u00d7": "x", "\u00a0": " ",
+    "\u2192": "->", "\u00b0": " deg",
+}
+
+
+def ascii_safe(text: str) -> str:
+    """Transliterate the characters policy text and citations use (section sign, dashes, quotes, <=, >=) and
+    replace anything else non-ASCII with '?', so the terminal never shows mojibake."""
+    for char, repl in _ASCII.items():
+        text = text.replace(char, repl)
+    return text.encode("ascii", "replace").decode("ascii")
+
+
 # ----------------------------------------------------------------------------- shared helpers
 
 
@@ -101,7 +120,7 @@ def console_report(view: dict, explanation: dict, policy_text: dict[str, dict] |
     out += textwrap.wrap(explanation["text"], width=76, initial_indent="  ", subsequent_indent="  ")
     if explanation.get("note"):
         out.append(f"  NOTE: {explanation['note']}")
-    return "\n".join(out)
+    return ascii_safe("\n".join(out))
 
 
 # ----------------------------------------------------------------------------- HTML
