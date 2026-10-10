@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-primary: #07111f;
+    --bg-secondary: #0c1828;
+    --bg-card: #0e1e32;
+    --bg-card-hover: #132740;
+    --bg-elevated: #112238;
+    --bg-input: #1e334d;
+    --border-subtle: #1e334d;
+    --border-muted: #2d4a6f;
+    --border-card: #1e334d;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --scrollbar-track: rgba(15, 23, 42, 0.4);
+    --scrollbar-thumb: rgba(71, 85, 105, 0.6);
+    --scrollbar-thumb-hover: rgba(100, 116, 139, 0.9);
+    color-scheme: dark;
+  }
+
+  html.light {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #f1f5f9;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f8fafc;
+    --bg-elevated: #ffffff;
+    --bg-input: #f1f5f9;
+    --border-subtle: #e2e8f0;
+    --border-muted: #cbd5e1;
+    --border-card: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --scrollbar-track: rgba(241, 245, 249, 0.4);
+    --scrollbar-thumb: rgba(203, 213, 225, 0.6);
+    --scrollbar-thumb-hover: rgba(148, 163, 184, 0.9);
+    color-scheme: light;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Accessible focus indicators */
+  :focus-visible {
+    outline: 2px solid #0c8ce9;
+    outline-offset: 2px;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Reduced Motion Optimization */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print Optimization */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  header, nav, footer, button, .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-page {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+}

@@ -11,7 +11,9 @@ import logging
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from .service import DemoService, UnknownCustomer
@@ -30,6 +32,17 @@ def create_app(offline: bool = False, warm: bool = True, service: DemoService | 
     svc = service or DemoService(offline=offline, warm=warm)
     app = FastAPI(title="Credit-Risk Investigation Agent (demo)", docs_url=None, redoc_url=None)
     app.state.service = svc
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    if (STATIC / "assets").exists():
+        app.mount("/assets", StaticFiles(directory=STATIC / "assets"), name="assets")
 
     @app.get("/", include_in_schema=False)
     async def index():
