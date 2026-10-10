@@ -4,21 +4,21 @@
 
 @layer base {
   :root {
-    --bg-primary: #07111f;
-    --bg-secondary: #0c1828;
-    --bg-card: #0e1e32;
-    --bg-card-hover: #132740;
-    --bg-elevated: #112238;
-    --bg-input: #1e334d;
-    --border-subtle: #1e334d;
-    --border-muted: #2d4a6f;
-    --border-card: #1e334d;
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
-    --scrollbar-track: rgba(15, 23, 42, 0.4);
-    --scrollbar-thumb: rgba(71, 85, 105, 0.6);
-    --scrollbar-thumb-hover: rgba(100, 116, 139, 0.9);
+    --bg-primary: #171a1c;
+    --bg-secondary: #202527;
+    --bg-card: #262d2f;
+    --bg-card-hover: #30393a;
+    --bg-elevated: #2b3334;
+    --bg-input: #36403f;
+    --border-subtle: #394443;
+    --border-muted: #52615e;
+    --border-card: #46524f;
+    --text-primary: #f5f2ea;
+    --text-secondary: #c1c7c1;
+    --text-muted: #9ba8a2;
+    --scrollbar-track: rgba(31, 37, 37, 0.5);
+    --scrollbar-thumb: rgba(90, 112, 106, 0.7);
+    --scrollbar-thumb-hover: rgba(120, 153, 143, 0.9);
     color-scheme: dark;
   }
 
@@ -33,8 +33,8 @@
     --border-muted: #cbd5e1;
     --border-card: #e2e8f0;
     --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-muted: #94a3b8;
+    --text-secondary: #334155;
+    --text-muted: #475569;
     --scrollbar-track: rgba(241, 245, 249, 0.4);
     --scrollbar-thumb: rgba(203, 213, 225, 0.6);
     --scrollbar-thumb-hover: rgba(148, 163, 184, 0.9);
@@ -49,10 +49,42 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  html.light .bg-slate-900\/80,
+  html.light .bg-slate-900\/60,
+  html.light .bg-slate-900\/50,
+  html.light .bg-slate-900\/40,
+  html.light .bg-slate-800,
+  html.light .bg-slate-800\/80 {
+    background-color: #eef2f3;
+  }
+
+  html.light .text-white {
+    color: #17211f;
+  }
+
+  html.light .text-content-muted {
+    color: #475569;
+  }
+
+  html.light .memo-exit {
+    background-color: #0f766e;
+    color: #ffffff;
+  }
+
+  html.light .memo-exit:hover {
+    background-color: #115e59;
+  }
+
+  html.light .offline-status {
+    border-color: #d97706;
+    background-color: #fffbeb;
+    color: #92400e;
+  }
+
   /* Accessible focus indicators */
   :focus-visible {
-    outline: 2px solid #0c8ce9;
-    outline-offset: 2px;
+    outline: 3px solid #0c8ce9;
+    outline-offset: 3px;
   }
 }
 

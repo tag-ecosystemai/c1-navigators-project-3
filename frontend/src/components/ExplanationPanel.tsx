@@ -33,7 +33,7 @@ export const ExplanationPanel: React.FC<ExplanationPanelProps> = ({
             </h3>
           </div>
           <span
-            className={`rounded-full border px-2.5 py-0.5 text-[11px] font-medium ${
+            className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${
               isAzure
                 ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
                 : "border-line-muted bg-slate-800 text-content-muted"
@@ -57,7 +57,7 @@ export const ExplanationPanel: React.FC<ExplanationPanelProps> = ({
               Analyst Action Checklist & Verification
             </h3>
           </div>
-          <span className="text-[11px] text-content-muted">
+          <span className="text-xs text-content-muted">
             {Object.values(checkedItems).filter(Boolean).length}/{initialChecklist.length} Completed
           </span>
         </div>
@@ -101,7 +101,7 @@ export const ExplanationPanel: React.FC<ExplanationPanelProps> = ({
                   </p>
                 </div>
 
-                <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider ${priorityBadge}`}>
+                <span className={`shrink-0 rounded-full border px-2 py-0.5 text-xs uppercase font-bold tracking-wider ${priorityBadge}`}>
                   {item.priority}
                 </span>
               </div>
@@ -117,7 +117,7 @@ export const ExplanationPanel: React.FC<ExplanationPanelProps> = ({
             <AlertCircle className="h-4 w-4" />
             <span>Identified Data Gaps for Underwriter Review</span>
           </div>
-          <ul className="list-disc pl-5 space-y-1 text-[11px] opacity-90">
+          <ul className="list-disc pl-5 space-y-1 text-xs opacity-90">
             {dataGaps.map((gap, idx) => (
               <li key={idx}>{gap}</li>
             ))}

@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   Clock,
   Check,
+  Loader2,
 } from "lucide-react";
 import { AgentStep } from "../types";
 
@@ -69,9 +70,15 @@ export const AgentPipelineStepper: React.FC<AgentPipelineStepperProps> = ({
               Total Latency: <strong className="font-mono text-brand-300">{totalMs} ms</strong>
             </span>
           </div>
-          <span className="inline-flex items-center gap-1 rounded bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-400 border border-emerald-500/20">
-            <Check className="h-3 w-3" /> 4 Agents Executed
-          </span>
+          {isInvestigating ? (
+            <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-400 border border-amber-500/20">
+              <Loader2 className="h-3 w-3 animate-spin" /> Processing...
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 rounded bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-400 border border-emerald-500/20">
+              <Check className="h-3 w-3" /> 4 Agents Executed
+            </span>
+          )}
         </div>
       </div>
 
@@ -89,7 +96,7 @@ export const AgentPipelineStepper: React.FC<AgentPipelineStepperProps> = ({
                       {getStepIcon(step.key)}
                     </div>
                     <div>
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-content-muted">
+                      <span className="text-xs font-mono uppercase tracking-wider text-content-muted">
                         Agent 0{idx + 1}
                       </span>
                       <h4 className="text-xs font-semibold text-content-secondary">
@@ -98,7 +105,7 @@ export const AgentPipelineStepper: React.FC<AgentPipelineStepperProps> = ({
                     </div>
                   </div>
 
-                  <span className="flex items-center gap-1 text-[11px] font-mono text-emerald-400">
+                  <span className="flex items-center gap-1 text-xs font-mono text-emerald-400">
                     {isInvestigating ? (
                       <span className="h-3 w-3 animate-spin rounded-full border border-brand-400 border-t-transparent" />
                     ) : (
@@ -110,13 +117,13 @@ export const AgentPipelineStepper: React.FC<AgentPipelineStepperProps> = ({
                   </span>
                 </div>
 
-                <p className="mt-2 text-[11px] text-content-muted leading-relaxed">
+                <p className="mt-2 text-xs text-content-muted leading-relaxed">
                   {getStepDescription(step.key)}
                 </p>
               </div>
 
               {step.summary && (
-                <div className="mt-2.5 rounded bg-slate-900/60 p-1.5 font-mono text-[10px] text-content-muted truncate">
+                <div className="mt-2.5 rounded bg-slate-900/60 p-1.5 font-mono text-xs text-content-muted truncate">
                   {step.summary}
                 </div>
               )}

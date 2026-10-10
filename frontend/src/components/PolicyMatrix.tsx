@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   CheckCircle2,
   AlertTriangle,
@@ -16,9 +16,11 @@ import { RuleDetail, RulesSummary, RuleOutcome } from "../types";
 interface PolicyMatrixProps {
   rules: RuleDetail[];
   summary: RulesSummary;
+  focusedRuleCode?: string | null;
+  onFocusedRuleHandled?: () => void;
 }
 
-export const PolicyMatrix: React.FC<PolicyMatrixProps> = ({ rules, summary }) => {
+export const PolicyMatrix: React.FC<PolicyMatrixProps> = ({ rules, summary, focusedRuleCode, onFocusedRuleHandled }) => {
   const [activeFilter, setActiveFilter] = useState<"all" | RuleOutcome>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -39,6 +41,15 @@ export const PolicyMatrix: React.FC<PolicyMatrixProps> = ({ rules, summary }) =>
   const collapseAll = () => {
     setExpandedRules({});
   };
+
+  useEffect(() => {
+    if (!focusedRuleCode) return;
+    setExpandedRules((previous) => ({ ...previous, [focusedRuleCode]: true }));
+    requestAnimationFrame(() => {
+      document.getElementById(`rule-${focusedRuleCode}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      onFocusedRuleHandled?.();
+    });
+  }, [focusedRuleCode, onFocusedRuleHandled]);
 
   const getCategory = (code: string) => {
     if (code.startsWith("POL-ELG")) return "Eligibility";
@@ -218,7 +229,8 @@ export const PolicyMatrix: React.FC<PolicyMatrixProps> = ({ rules, summary }) =>
             return (
               <div
                 key={rule.code}
-                className={`rounded-xl border transition-all ${
+                id={`rule-${rule.code}`}
+                className={`rounded-xl border transition-all ${focusedRuleCode === rule.code ? "ring-2 ring-brand-400 ring-offset-2 ring-offset-surface-primary " : ""}${
                   isDriver
                     ? rule.outcome === "fail"
                       ? "border-rose-500/50 bg-[#1a0f18]/90 ring-1 ring-rose-500/30"
@@ -247,7 +259,7 @@ export const PolicyMatrix: React.FC<PolicyMatrixProps> = ({ rules, summary }) =>
                           {rule.name}
                         </h4>
                         {isDriver && (
-                          <span className="inline-flex items-center gap-1 rounded bg-rose-500/20 px-1.5 py-0.5 text-[10px] font-bold text-rose-300 border border-rose-500/30">
+                          <span className="inline-flex items-center gap-1 rounded bg-rose-500/20 px-1.5 py-0.5 text-xs font-bold text-rose-300 border border-rose-500/30">
                             <BadgeAlert className="h-3 w-3" /> Primary Driver
                           </span>
                         )}
@@ -259,11 +271,11 @@ export const PolicyMatrix: React.FC<PolicyMatrixProps> = ({ rules, summary }) =>
                   {/* Quantitative Actual vs Threshold */}
                   <div className="flex items-center justify-between sm:justify-end gap-4 text-xs">
                     <div className="text-right">
-                      <div className="text-[10px] text-content-muted">Actual Value</div>
+                      <div className="text-xs text-content-muted">Actual Value</div>
                       <div className="font-mono font-bold text-content-primary">{rule.actual}</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-[10px] text-content-muted">Policy Limit</div>
+                      <div className="text-xs text-content-muted">Policy Limit</div>
                       <div className="font-mono text-content-muted">{rule.threshold}</div>
                     </div>
 
@@ -277,16 +289,16 @@ export const PolicyMatrix: React.FC<PolicyMatrixProps> = ({ rules, summary }) =>
                 {isExpanded && (
                   <div className="border-t border-line-subtle/80 bg-slate-950/60 p-4 rounded-b-xl space-y-3 text-xs">
                     <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-content-muted block mb-1">
+                      <span className="text-xs font-bold uppercase tracking-wider text-content-muted block mb-1">
                         Policy Document Citation
                       </span>
-                      <div className="font-mono text-[11px] text-brand-300 bg-brand-950/30 border border-brand-500/20 rounded p-2">
+                      <div className="font-mono text-xs text-brand-300 bg-brand-950/30 border border-brand-500/20 rounded p-2">
                         {rule.citation}
                       </div>
                     </div>
 
                     <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-content-muted block mb-1">
+                      <span className="text-xs font-bold uppercase tracking-wider text-content-muted block mb-1">
                         Policy Excerpt
                       </span>
                       <blockquote className="border-l-2 border-slate-600 pl-3 py-1 text-content-muted italic text-xs leading-relaxed">
