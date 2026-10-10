@@ -17,7 +17,7 @@ export const CrossCheckDrawer: React.FC<CrossCheckDrawerProps> = ({ crossCheck }
               Policy RAG Cross-Check
             </h3>
           </div>
-          <span className="rounded-full border border-line-muted bg-slate-800 px-2 py-0.5 text-[10px] text-content-muted">
+          <span className="rounded-full border border-line-muted bg-slate-800 px-2 py-0.5 text-xs text-content-muted">
             Offline Mode
           </span>
         </div>
@@ -39,7 +39,7 @@ export const CrossCheckDrawer: React.FC<CrossCheckDrawerProps> = ({ crossCheck }
             Policy Checker vs Rule Evaluator
           </h3>
         </div>
-        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300">
+        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-300">
           <ShieldCheck className="h-3 w-3" />
           {crossCheck.compared}/{crossCheck.total_rules} Rules Compared
         </span>
@@ -51,7 +51,7 @@ export const CrossCheckDrawer: React.FC<CrossCheckDrawerProps> = ({ crossCheck }
             <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
             <div>
               <strong className="font-semibold block">Full Policy Agreement</strong>
-              <p className="mt-0.5 text-[11px] opacity-90">
+              <p className="mt-0.5 text-xs opacity-90">
                 Azure OpenAI RAG checker and the deterministic rule evaluator agree on all {crossCheck.compared} verified clauses.
               </p>
             </div>
@@ -62,7 +62,7 @@ export const CrossCheckDrawer: React.FC<CrossCheckDrawerProps> = ({ crossCheck }
               <AlertTriangle className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
               <div>
                 <strong>Interpretation Differences Identified</strong>
-                <p className="mt-0.5 text-[11px] opacity-90">
+                <p className="mt-0.5 text-xs opacity-90">
                   The LLM identified nuanced policy criteria requiring human analyst review.
                 </p>
               </div>
@@ -76,12 +76,12 @@ export const CrossCheckDrawer: React.FC<CrossCheckDrawerProps> = ({ crossCheck }
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-mono font-bold text-brand-300">{conflict.rule}</span>
-                    <div className="flex items-center gap-2 text-[10px]">
+                    <div className="flex items-center gap-2 text-xs">
                       <span className="text-content-muted">Engine: <strong className="text-content-secondary">{conflict.evaluator}</strong></span>
                       <span className="text-content-muted">RAG: <strong className="text-amber-300">{conflict.rag}</strong></span>
                     </div>
                   </div>
-                  <p className="text-[11px] text-content-muted italic">{conflict.notes}</p>
+                  <p className="text-xs text-content-muted italic">{conflict.notes}</p>
                 </div>
               ))}
             </div>

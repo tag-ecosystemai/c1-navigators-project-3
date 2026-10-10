@@ -1,17 +1,16 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Navbar } from "./components/Navbar";
 import { PersonaSelector } from "./components/PersonaSelector";
 import { AgentPipelineStepper } from "./components/AgentPipelineStepper";
-import { VerdictHero } from "./components/VerdictHero";
 import { PolicyMatrix } from "./components/PolicyMatrix";
 import { MLRiskCard } from "./components/MLRiskCard";
 import { CrossCheckDrawer } from "./components/CrossCheckDrawer";
-import { ExplanationPanel } from "./components/ExplanationPanel";
 import { ComparisonModal } from "./components/ComparisonModal";
 import { KeyboardShortcutsModal } from "./components/KeyboardShortcutsModal";
 import { ReportViewModal } from "./components/ReportViewModal";
 import { TabNavigation } from "./components/TabNavigation";
 import { FinancialForensics } from "./components/FinancialForensics";
+import { CaseOverview } from "./components/CaseOverview";
 import { fetchHealth, fetchPersonas, investigateApplicant } from "./api/client";
 import { HealthResponse, Persona, InvestigationData, ViewTab } from "./types";
 import { AlertTriangle, Loader2 } from "lucide-react";
@@ -26,11 +25,18 @@ export const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<ViewTab>("overview");
+  const lastNonMemoTab = useRef<ViewTab>("overview");
+  const [focusedRuleCode, setFocusedRuleCode] = useState<string | null>(null);
+  const [showPipeline, setShowPipeline] = useState(false);
 
   // Modals state
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
+
+  useEffect(() => {
+    if (activeTab !== "memo") lastNonMemoTab.current = activeTab;
+  }, [activeTab]);
 
   // Toggle Theme
   const toggleTheme = () => {
@@ -101,7 +107,6 @@ export const App: React.FC = () => {
   const handleSelectPersona = (id: string) => {
     if (id === selectedId && investigationData) return;
     setSelectedId(id);
-    setActiveTab("overview");
     runInvestigation(id, false);
   };
 
@@ -138,7 +143,7 @@ export const App: React.FC = () => {
         setIsCompareOpen(false);
         setIsShortcutsOpen(false);
         setIsReportOpen(false);
-        setActiveTab((prev) => (prev === "memo" ? "overview" : prev));
+        setActiveTab((prev) => (prev === "memo" ? lastNonMemoTab.current : prev));
       }
     };
 
@@ -146,11 +151,15 @@ export const App: React.FC = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [personas, selectedId, theme]);
 
-  const scrollToRules = () => {
-    const el = document.getElementById("policy-matrix-section");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
+  const openMemo = () => {
+    if (activeTab !== "memo") lastNonMemoTab.current = activeTab;
+    setActiveTab("memo");
+    setIsReportOpen(true);
+  };
+
+  const openDriverRule = (code: string) => {
+    setFocusedRuleCode(code);
+    setActiveTab("rules");
   };
 
   return (
@@ -164,11 +173,12 @@ export const App: React.FC = () => {
         onOpenCompare={() => setIsCompareOpen(true)}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
         onRefresh={handleRefresh}
+        onLogoClick={() => setActiveTab("overview")}
         isInvestigating={loading}
       />
 
       {/* Main Container */}
-      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+      <main className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8 space-y-5">
         {/* Persona Selector Bar */}
         {personas.length > 0 && (
           <PersonaSelector
@@ -189,71 +199,50 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {/* Loading Spinner Skeleton */}
+        {/* Loading Skeleton */}
         {loading && !investigationData && (
-          <div className="flex flex-col items-center justify-center py-24 text-content-muted gap-3">
-            <Loader2 className="h-10 w-10 animate-spin text-brand-500" />
-            <p className="text-sm font-medium">Investigating credit application with AI agents...</p>
+          <div className="space-y-6">
+            <div className="flex flex-col items-center justify-center py-8 text-content-muted gap-3">
+              <Loader2 className="h-10 w-10 animate-spin text-brand-500" />
+              <p className="text-sm font-medium">Investigating credit application with AI agents...</p>
+            </div>
+            {/* Dummy VerdictHero block */}
+            <div className="h-64 rounded-xl bg-surface-secondary animate-pulse w-full" />
+            {/* 2-Column Grid */}
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+              <div className="lg:col-span-7 h-96 rounded-xl bg-surface-secondary animate-pulse" />
+              <div className="lg:col-span-5 h-96 rounded-xl bg-surface-secondary animate-pulse" />
+            </div>
           </div>
         )}
 
         {/* Investigation Results */}
         {investigationData && (
           <div className="space-y-6">
-            {/* 4-Agent Pipeline Stepper */}
-            <AgentPipelineStepper
-              steps={investigationData.steps}
-              totalMs={investigationData.timings.total_ms}
-              engineMs={investigationData.timings.engine_ms}
-              isInvestigating={loading}
-            />
+            <details open={showPipeline} onToggle={(event) => setShowPipeline((event.target as HTMLDetailsElement).open)} className="rounded-xl border border-line-subtle bg-surface-secondary/70 px-4 py-3">
+              <summary className="cursor-pointer list-none text-xs font-semibold text-content-secondary">
+                <span className="mr-2 text-brand-400">Investigation run</span>{investigationData.steps.length} agents completed in {investigationData.timings.total_ms} ms
+              </summary>
+              <div className="mt-4"><AgentPipelineStepper steps={investigationData.steps} totalMs={investigationData.timings.total_ms} engineMs={investigationData.timings.engine_ms} isInvestigating={loading} /></div>
+            </details>
 
             <TabNavigation
               activeTab={activeTab}
               onTabChange={(tab) => {
-                setActiveTab(tab);
                 if (tab === "memo") {
-                  setIsReportOpen(true);
+                  openMemo();
+                } else {
+                  setActiveTab(tab);
                 }
               }}
+              onReturnToOverview={() => setActiveTab("overview")}
               disabled={loading}
             />
 
             {/* Conditional Content based on activeTab */}
             {activeTab === "overview" && (
               <>
-                {/* Verdict Hero Card */}
-                <VerdictHero
-                  verdict={investigationData.verdict}
-                  applicant={investigationData.applicant}
-                  onOpenReport={() => {
-                    setIsReportOpen(true);
-                    setActiveTab("memo");
-                  }}
-                  onScrollToRules={scrollToRules}
-                />
-
-                {/* 2-Column Main Analysis Section */}
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-                  {/* Left Column: 14-Rule Policy Matrix (7 Cols) */}
-                  <div className="lg:col-span-7 space-y-6">
-                    <PolicyMatrix
-                      rules={investigationData.rules}
-                      summary={investigationData.rules_summary}
-                    />
-                  </div>
-
-                  {/* Right Column: ML Risk, Cross-Check & AI Narrative (5 Cols) */}
-                  <div className="lg:col-span-5 space-y-6">
-                    <MLRiskCard ml={investigationData.ml} />
-                    <CrossCheckDrawer crossCheck={investigationData.cross_check} />
-                    <ExplanationPanel
-                      explanation={investigationData.explanation}
-                      checklist={investigationData.checklist}
-                      dataGaps={investigationData.data_gaps}
-                    />
-                  </div>
-                </div>
+                <CaseOverview data={investigationData} onOpenMemo={openMemo} onOpenRules={() => setActiveTab("rules")} onOpenForensics={() => setActiveTab("forensics")} onOpenMl={() => setActiveTab("ml")} onViewDriver={openDriverRule} />
               </>
             )}
 
@@ -262,6 +251,8 @@ export const App: React.FC = () => {
                 <PolicyMatrix
                   rules={investigationData.rules}
                   summary={investigationData.rules_summary}
+                  focusedRuleCode={focusedRuleCode}
+                  onFocusedRuleHandled={() => setFocusedRuleCode(null)}
                 />
               </div>
             )}
@@ -304,8 +295,12 @@ export const App: React.FC = () => {
         <ReportViewModal
           isOpen={isReportOpen}
           onClose={() => {
+              setIsReportOpen(false);
+              setActiveTab((prev) => (prev === "memo" ? lastNonMemoTab.current : prev));
+            }}
+          onReturnHome={() => {
             setIsReportOpen(false);
-            setActiveTab((prev) => (prev === "memo" ? "overview" : prev));
+            setActiveTab("overview");
           }}
           data={investigationData}
         />

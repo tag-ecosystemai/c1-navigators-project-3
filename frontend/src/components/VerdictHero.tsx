@@ -113,28 +113,28 @@ export const VerdictHero: React.FC<VerdictHeroProps> = ({
         {/* Right Side: Quick Action & Financial Snapshot */}
         <div className="flex flex-col gap-4 lg:w-80 shrink-0">
           <div className="rounded-xl border border-line-subtle bg-surface-primary/80 p-4">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-content-muted block mb-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-content-muted block mb-3">
               Applicant Profile & Facility
             </span>
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div>
-                <span className="text-content-muted block text-[10px]">Requested Facility</span>
+                <span className="text-content-muted block text-xs">Requested Facility</span>
                 <strong className="text-content-primary text-sm font-semibold">{applicant.requested_amount}</strong>
-                <span className="text-content-muted block text-[10px]">{applicant.loan_tenure_months} mo. tenure</span>
+                <span className="text-content-muted block text-xs">{applicant.loan_tenure_months} mo. tenure</span>
               </div>
               <div>
-                <span className="text-content-muted block text-[10px]">Credit Bureau Score</span>
+                <span className="text-content-muted block text-xs">Credit Bureau Score</span>
                 <strong className={`text-sm font-bold font-mono ${applicant.credit_score >= 680 ? "text-emerald-400" : applicant.credit_score >= 600 ? "text-amber-400" : "text-rose-400"}`}>
                   {applicant.credit_score}
                 </strong>
-                <span className="text-content-muted block text-[10px]">{applicant.purpose}</span>
+                <span className="text-content-muted block text-xs">{applicant.purpose}</span>
               </div>
               <div className="border-t border-line-subtle pt-2">
-                <span className="text-content-muted block text-[10px]">Stated Income</span>
+                <span className="text-content-muted block text-xs">Stated Income</span>
                 <span className="text-content-secondary font-semibold">{applicant.monthly_income}</span>
               </div>
               <div className="border-t border-line-subtle pt-2">
-                <span className="text-content-muted block text-[10px]">Living Expenses</span>
+                <span className="text-content-muted block text-xs">Living Expenses</span>
                 <span className="text-content-secondary font-semibold">{applicant.monthly_expenses}</span>
               </div>
             </div>

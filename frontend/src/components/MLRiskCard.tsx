@@ -44,7 +44,7 @@ export const MLRiskCard: React.FC<MLRiskCardProps> = ({ ml }) => {
             ML Probability of Default (PD)
           </h3>
         </div>
-        <span className={`rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${tierBadge}`}>
+        <span className={`rounded-full border px-2.5 py-0.5 text-xs font-bold ${tierBadge}`}>
           {ml.level.replace("_", " ")}
         </span>
       </div>
@@ -60,7 +60,7 @@ export const MLRiskCard: React.FC<MLRiskCardProps> = ({ ml }) => {
               ({scorePct}% default prob.)
             </span>
           </div>
-          <p className="mt-1 text-[11px] text-content-muted">
+          <p className="mt-1 text-xs text-content-muted">
             XGBoost model trained on 20 financial & transaction features
           </p>
         </div>
@@ -75,7 +75,7 @@ export const MLRiskCard: React.FC<MLRiskCardProps> = ({ ml }) => {
               style={{ width: `${Math.max(scorePct, 4)}%` }}
             />
           </div>
-          <span className="text-[10px] font-mono text-content-muted mt-1 block">
+          <span className="text-xs font-mono text-content-muted mt-1 block">
             {ml.precomputed ? "Batch Prediction" : "Live Scored"}
           </span>
         </div>
@@ -83,7 +83,7 @@ export const MLRiskCard: React.FC<MLRiskCardProps> = ({ ml }) => {
 
       {/* Feature Attribution / Top Drivers */}
       <div className="mt-5 space-y-2.5">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-content-muted block">
+        <span className="text-xs font-bold uppercase tracking-wider text-content-muted block">
           Key Feature Risk Drivers
         </span>
 
@@ -108,13 +108,13 @@ export const MLRiskCard: React.FC<MLRiskCardProps> = ({ ml }) => {
 
                 <div className="flex items-center gap-2 shrink-0">
                   <span
-                    className={`text-[10px] font-semibold uppercase tracking-wider ${
+                    className={`text-xs font-semibold uppercase tracking-wider ${
                       raisesRisk ? "text-rose-400" : "text-emerald-400"
                     }`}
                   >
                     {driver.effect}
                   </span>
-                  <span className="font-mono text-[11px] text-content-muted w-8 text-right">
+                  <span className="font-mono text-xs text-content-muted w-8 text-right">
                     {sharePct}%
                   </span>
                 </div>
@@ -127,7 +127,7 @@ export const MLRiskCard: React.FC<MLRiskCardProps> = ({ ml }) => {
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-4 flex items-start gap-1.5 rounded-lg bg-slate-900/60 p-2.5 text-[11px] text-content-muted">
+      <div className="mt-4 flex items-start gap-1.5 rounded-lg bg-slate-900/60 p-2.5 text-xs text-content-muted">
         <Info className="h-3.5 w-3.5 text-brand-400 shrink-0 mt-0.5" />
         <span>{ml.label}</span>
       </div>

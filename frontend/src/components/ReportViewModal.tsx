@@ -1,16 +1,18 @@
 import React from "react";
-import { X, Printer, ShieldCheck, UserCheck } from "lucide-react";
+import { House, X, Printer, ShieldCheck, UserCheck } from "lucide-react";
 import { InvestigationData } from "../types";
 
 interface ReportViewModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onReturnHome: () => void;
   data: InvestigationData;
 }
 
 export const ReportViewModal: React.FC<ReportViewModalProps> = ({
   isOpen,
   onClose,
+  onReturnHome,
   data,
 }) => {
   if (!isOpen) return null;
@@ -23,19 +25,29 @@ export const ReportViewModal: React.FC<ReportViewModalProps> = ({
   const isReview = data.verdict.code === "FURTHER_REVIEW_REQUIRED";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="report-modal-title">
+      <button
+        type="button"
+        onClick={onReturnHome}
+        className="memo-exit fixed bottom-5 right-5 z-20 flex items-center gap-2 rounded-xl bg-teal-700 px-4 py-3 text-sm font-semibold text-white shadow-xl ring-1 ring-white/20 transition hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-brand-300 print:hidden"
+        aria-label="Exit memo and return to case overview"
+      >
+        <House className="h-4 w-4" />
+        <span>Exit memo</span>
+      </button>
       <div className="relative my-8 w-full max-w-4xl rounded-2xl border border-line-muted bg-white text-slate-900 shadow-2xl overflow-hidden print:m-0 print:border-none print:shadow-none">
         {/* Actions Bar (hidden when printing) */}
-        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-100 p-4 print:hidden">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-100 p-4 shadow-sm print:static print:hidden">
           <div className="flex items-center gap-2">
             <ShieldCheck className="h-5 w-5 text-brand-600" />
-            <h3 className="font-bold text-sm text-slate-800">
+            <h3 id="report-modal-title" className="font-bold text-sm text-slate-800">
               Credit Investigation Memorandum
             </h3>
           </div>
 
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={handlePrint}
               className="flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white shadow hover:bg-brand-700"
             >
@@ -43,10 +55,22 @@ export const ReportViewModal: React.FC<ReportViewModalProps> = ({
               <span>Print / Export PDF</span>
             </button>
             <button
+              type="button"
               onClick={onClose}
-              className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-200 hover:text-slate-800"
+              aria-label="Back to case"
+              title="Back to case"
+              className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200 hover:text-slate-900"
             >
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4" />
+              <span>Back to case</span>
+            </button>
+            <button
+              type="button"
+              onClick={onReturnHome}
+              className="flex items-center gap-1.5 rounded-lg bg-slate-800 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-slate-700"
+            >
+              <House className="h-4 w-4" />
+              <span>Case overview</span>
             </button>
           </div>
         </div>
@@ -158,8 +182,8 @@ export const ReportViewModal: React.FC<ReportViewModalProps> = ({
                         {r.outcome.toUpperCase()} (Actual: {r.actual} | Limit: {r.threshold})
                       </span>
                     </div>
-                    <p className="text-slate-600 text-[11px] mt-0.5">{r.reason}</p>
-                    <p className="text-content-muted text-[10px] mt-0.5 italic">{r.citation}</p>
+                    <p className="text-slate-600 text-xs mt-0.5">{r.reason}</p>
+                    <p className="text-content-muted text-xs mt-0.5 italic">{r.citation}</p>
                   </div>
                 ))}
             </div>
@@ -201,17 +225,17 @@ export const ReportViewModal: React.FC<ReportViewModalProps> = ({
                 <UserCheck className="h-4 w-4 text-brand-600" />
                 <span>Human Decision Ownership</span>
               </div>
-              <p className="text-slate-500 text-[11px] leading-relaxed">
+              <p className="text-slate-500 text-xs leading-relaxed">
                 This report is generated for decision support. The credit underwriter holds ultimate responsibility for lending approvals and policy exceptions.
               </p>
             </div>
             <div className="space-y-4">
               <div className="border-b border-slate-400 pb-1">
-                <span className="text-slate-500 text-[10px] block">Credit Analyst Signature:</span>
+                <span className="text-slate-500 text-xs block">Credit Analyst Signature:</span>
                 <div className="h-6"></div>
               </div>
               <div className="border-b border-slate-400 pb-1">
-                <span className="text-slate-500 text-[10px] block">Risk Supervisor Approval:</span>
+                <span className="text-slate-500 text-xs block">Risk Supervisor Approval:</span>
                 <div className="h-6"></div>
               </div>
             </div>

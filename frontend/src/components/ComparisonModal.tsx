@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { X, Scale, CheckCircle2, AlertTriangle, XCircle, ArrowRight, Loader2 } from "lucide-react";
 import { Persona, InvestigationData } from "../types";
 import { investigateApplicant } from "../api/client";
@@ -18,25 +18,33 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 }) => {
   const [dataMap, setDataMap] = useState<Record<string, InvestigationData>>({});
   const [loading, setLoading] = useState(false);
+  const cacheRef = useRef<Record<string, InvestigationData>>({});
 
   useEffect(() => {
     if (!isOpen) return;
 
+    // Check if we already have the data
+    const uncachedPersonas = personas.filter(p => !cacheRef.current[p.id]);
+    if (uncachedPersonas.length === 0) {
+      setDataMap(cacheRef.current);
+      return;
+    }
+
     let isMounted = true;
     setLoading(true);
 
-    // Fetch all 5 personas in parallel
+    // Fetch uncached personas
     Promise.allSettled(
-      personas.map((p) => investigateApplicant(p.id, false, false))
+      uncachedPersonas.map((p) => investigateApplicant(p.id, false, false))
     ).then((results) => {
       if (!isMounted) return;
-      const map: Record<string, InvestigationData> = {};
+
       results.forEach((res, idx) => {
         if (res.status === "fulfilled") {
-          map[personas[idx].id] = res.value;
+          cacheRef.current[uncachedPersonas[idx].id] = res.value;
         }
       });
-      setDataMap(map);
+      setDataMap({ ...cacheRef.current });
       setLoading(false);
     });
 
@@ -66,6 +74,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
           <button
             onClick={onClose}
+            aria-label="Close comparison"
             className="rounded-lg p-2 text-content-muted hover:bg-slate-800 hover:text-white transition-colors"
           >
             <X className="h-5 w-5" />
@@ -96,13 +105,13 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                   >
                     {/* Top Identity */}
                     <div>
-                      <span className="font-mono text-[10px] text-content-muted block">{persona.id}</span>
+                      <span className="font-mono text-xs text-content-muted block">{persona.id}</span>
                       <h3 className="font-bold text-sm text-white">{persona.name}</h3>
 
                       {/* Verdict Badge */}
                       <div className="mt-2.5">
                         <span
-                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold ${
+                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold ${
                             isApproved
                               ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
                               : isReview
@@ -120,7 +129,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
                     {/* Primary Driver */}
                     <div className="border-t border-line-subtle/80 pt-3">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-content-muted block">
+                      <span className="text-xs font-bold uppercase tracking-wider text-content-muted block">
                         Primary Driver
                       </span>
                       <p className="mt-1 font-semibold text-content-secondary">
@@ -129,7 +138,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                     </div>
 
                     {/* Key Metrics Table */}
-                    <div className="space-y-2 border-t border-line-subtle/80 pt-3 text-[11px]">
+                    <div className="space-y-2 border-t border-line-subtle/80 pt-3 text-xs">
                       <div className="flex justify-between">
                         <span className="text-content-muted">ML Default Prob:</span>
                         <strong className="font-mono text-content-secondary">
