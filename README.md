@@ -1,16 +1,5 @@
 # c1-navigators-project-3
 
-Demo guide
-Fresh clone on Windows (Git Bash)
-git clone <repo-url> && cd <repo-folder>
-git checkout feat/azure-demo            # or main once merged
-python -m venv .venv
-source .venv/Scripts/activate
-pip install -r ai_engineering/requirements.txt
-cp .env.example .env                    # then fill in the Azure values: docs/AZURE_SETUP.md
-python -m ai_engineering.rag.cli doctor # must end with "All checks passed."
-python -m pytest ai_engineering/tests -q
-Without Azure values you can still run everything except the Azure parts: use --offline.
 
 # AI Credit-Risk Investigation Agent Backend
 
