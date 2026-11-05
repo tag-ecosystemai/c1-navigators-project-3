@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build and Push Frontend and Backend Images
 
 on:
   push:
@@ -6,10 +6,10 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-and-push:
+  # === 🐍 BACKEND BUILD ===
+  build-backend:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -26,19 +26,52 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
+      - name: Extract Backend Metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=latest
+          images: ${{ env.REGISTRY }}/${{ github.repository }}-backend
+          tags: type=raw,value=latest
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+      - name: Build and push Backend image
+        uses: docker/build-push-action@v6
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  # === ⚡ FRONTEND BUILD ===
+  build-frontend:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Frontend Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}-frontend
+          tags: type=raw,value=latest
+
+      - name: Build and push Frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
